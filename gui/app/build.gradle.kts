@@ -9,6 +9,7 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+    id("org.openjfx.javafxplugin") version "0.0.13"
 }
 
 repositories {
@@ -24,7 +25,11 @@ dependencies {
     implementation("com.google.guava:guava:31.1-jre")
 }
 
+javafx {
+    modules("javafx.controls", "javafx.fxml")
+}
+
 application {
     // Define the main class for the application.
-    mainClass.set("com.github.klsweat.core.App")
+    mainClass.set("com.github.klsweat.core.Main")
 }
