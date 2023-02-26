@@ -13,6 +13,3 @@ TBD
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are all welcome.
-
-## ⭐ License
-This project is [MIT](https://github.com/klsweat/GIS/blob/main/LICENSE) licensed.
