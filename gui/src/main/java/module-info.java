@@ -8,4 +8,6 @@ module gis.app {
 
     opens gis.app to javafx.fxml;
     exports gis.app;
+    exports gis.model;
+    opens gis.model to javafx.fxml;
 }
