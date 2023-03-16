@@ -1,5 +1,6 @@
 package gis.model;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 /* This class should represent every location needed in the dataset. This could be
@@ -22,12 +23,14 @@ public class Location {
     private double x;
 
     private double y;
+    private int ID;
 
     private HashMap<Integer, Double> dayValueDictionary;
 
-    public Location (double x, double y) {
+    public Location (double x, double y, int ID) {
         this.x = x;
         this.y = y;
+        this.ID = ID;
         dayValueDictionary = new HashMap<>();
     }
 
@@ -37,6 +40,11 @@ public class Location {
 
     public double getDay(int day) {
         return dayValueDictionary.get(day);
+    }
+
+    // return the entire hashmap
+    public HashMap<Integer, Double> getDayValueDictionary() {
+        return dayValueDictionary;
     }
 
     public double getX() {
@@ -53,5 +61,21 @@ public class Location {
 
     public void setY(double y) {
         this.y = y;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(Integer ID) {
+        this.ID = ID;
+    }
+
+    public String showData(){
+
+        //visually show object
+       String str = "ID = "+ID+" x = "+x + "  " + " y = "+y + " "  + " \n" + "Day/Measurement = "+Arrays.asList(dayValueDictionary)+ " \n" ; // method 1
+return str;
+        //System.out.println();
     }
 }

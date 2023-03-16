@@ -9,13 +9,7 @@
         <VBox layoutY="42.0" prefHeight="358.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="42.0">
             <children>
                 <TableView fx:id="table" maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="tableID" prefWidth="75.0" text="ID" />
-                        <TableColumn fx:id="time" prefWidth="75.0" text="TIME" />
-                        <TableColumn prefWidth="75.0" text="X" fx:id="xCol" />
-                        <TableColumn fx:id="yCol" prefWidth="75.0" text="Y" />
-                        <TableColumn fx:id="pms" prefWidth="75.0" text="PM25" />
-                    </columns>
+
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                     </columnResizePolicy>
@@ -25,11 +19,11 @@
                 </TableView>
             </children>
         </VBox>
-      <Button fx:id="importBtn" mnemonicParsing="false" onAction="#handleButtonAction" text="Import" />
-      <HBox alignment="TOP_RIGHT" layoutX="361.0" layoutY="1.0" prefHeight="37.0">
+      <Button fx:id="importBtn" layoutY="7.0" mnemonicParsing="false" onAction="#handleButtonAction" text="Import New Data Set" />
+      <HBox alignment="TOP_RIGHT" layoutX="361.0" layoutY="1.0" prefHeight="37.0" visible="false">
          <children>
-            <Label prefHeight="37.0" prefWidth="85.0" text="Time Domain:" />
-            <ComboBox fx:id="timeDomain" prefWidth="150.0" onAction="#handleComboBoxAction">
+            <Label prefHeight="37.0" prefWidth="85.0" text="Time Domain:" visible="false" />
+            <ComboBox fx:id="timeDomain" onAction="#handleComboBoxAction" prefWidth="150.0">
                <HBox.margin>
                   <Insets top="5.0" />
                </HBox.margin></ComboBox>
