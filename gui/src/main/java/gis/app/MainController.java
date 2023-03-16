@@ -40,15 +40,17 @@ public class MainController implements Initializable {
     public TableColumn<MasterTable, String> xCol;
     @FXML
     public TableColumn<MasterTable, String> yCol;
-    @FXML public TableColumn<MasterTable, String> pms;
-    @FXML public Button importBtn;
+    @FXML
+    public TableColumn<MasterTable, String> pms;
+    @FXML
+    public Button importBtn;
     public ComboBox<String> timeDomain;
     public String filepathInitialData = "";
     public String filepathInterpolateData = "";
     private Object selected = "Day.";
 
     private String timeF = "";
-    private  ObservableList<gis.app.MasterTable> masterTable = FXCollections.observableArrayList();
+    private ObservableList<gis.app.MasterTable> masterTable = FXCollections.observableArrayList();
 
     // Create a HashMap object called capitalCities
     private HashMap<String, Location> capitalCities = new HashMap<String, Location>();
@@ -149,7 +151,7 @@ public class MainController implements Initializable {
         createFile();
     }
 
-    private List<MasterTable> readNewFile(String fileName){
+    private List<MasterTable> readNewFile(String fileName) {
         List<MasterTable> metricsss = new ArrayList<>();
 
         Path pathToFile = Paths.get(fileName);
@@ -176,8 +178,8 @@ public class MainController implements Initializable {
             while ((line = br.readLine()) != null) {
                 //System.out.println(line);
                 String[] attributes = line.split("\\s+");
-                Double x=Double.valueOf(attributes[1]);
-                Double y=Double.valueOf(attributes[2]);
+                Double x = Double.valueOf(attributes[1]);
+                Double y = Double.valueOf(attributes[2]);
                 String dataSourceKey = attributes[1] + ", " + attributes[2];
 
                 //create array of employee object
@@ -208,7 +210,6 @@ public class MainController implements Initializable {
                 lineCount++;
 
 
-
             }
 
         } catch (FileNotFoundException e) {
@@ -236,15 +237,15 @@ public class MainController implements Initializable {
                 int month2 = Integer.parseInt(attributes2[2]);
                 int day2 = Integer.parseInt(attributes2[3]);
                 Double pm25 = Double.parseDouble(attributes2[6]);
-                 //System.out.println(dataSourceKey2);
+                //System.out.println(dataSourceKey2);
                 //dataPoints.get("-110.76118, 43.47808").get(1).setDay(1, 2.0);
 
                 // Check is key exists in the Map
                 boolean isKeyPresent = dataPoints.containsKey(dataSourceKey2);
-                if(isKeyPresent){
+                if (isKeyPresent) {
                     // insert default measurements associated with locations and month, day, years
                     //System.out.println(dataPoints.get(dataSourceKey2));
-                    dataPoints.get(dataSourceKey2).get(month2).setDay(day2,pm25);
+                    dataPoints.get(dataSourceKey2).get(month2).setDay(day2, pm25);
                 }
 
 
@@ -253,7 +254,6 @@ public class MainController implements Initializable {
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
-
 
 
         for (Map.Entry<String, HashMap<Integer, Location>> entryA : dataPoints.entrySet()) {
@@ -303,15 +303,15 @@ public class MainController implements Initializable {
 
                /* Another way to print it out
                for(Location val : value.values()) {System.out.println(val.showData());}*/
-                //System.out.println("\n");
+            //System.out.println("\n");
 
         }
-
 
 
         sort(metricsss);
         return metricsss;
     }
+
     // sort table
     public static void sort(List<MasterTable> list) {
         list.sort((o1, o2)
@@ -339,35 +339,34 @@ public class MainController implements Initializable {
         }*/
 
 
-       // System.out.println("id " + id + "year " + " month " + month + " day " + day + " x " + x + " y " + y + " pm25 " + pms);
+        // System.out.println("id " + id + "year " + " month " + month + " day " + day + " x " + x + " y " + y + " pm25 " + pms);
         return new MasterTable(id, year, month, day, x, y, pms);//,cc
     }
 
-    private void createFile(){
+    private void createFile() {
         String home = System.getProperty("user.home");
 
         //   FileInputStream fi = new FileInputStream(new File(home+"/Downloads/county_id_t_w.txt"));
         // Write the list to a text file
         try {
-            writeToTextFile(home+"/Downloads/county_id_t_w.txt", masterTable);
+            writeToTextFile(home + "/Downloads/county_id_t_w.txt", masterTable);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     private static void writeToTextFile(String filename, ObservableList<MasterTable> students)
             throws IOException {
 
 
         try (BufferedWriter bw = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(filename))))
-        {
+                new OutputStreamWriter(new FileOutputStream(filename)))) {
             String identifier1 = String.format("%-20s %-20s %-20s %-20s %-20s %-20s %-20s%n", "ID", "YEAR", "MONTH", "DAY", "X", "Y", "PM25");
             bw.write(identifier1);
 
             for (MasterTable student : students) {
-                bw.write(String.format("%-20s %-20s %-20s %-20s %-20s %-20s %-20s%n", student.getTableID(), student.getYear(), student.getMonth(), student.getDay(), student.getXcol(), student.getYcol(), student.getPms()) );
+                bw.write(String.format("%-20s %-20s %-20s %-20s %-20s %-20s %-20s%n", student.getTableID(), student.getYear(), student.getMonth(), student.getDay(), student.getXcol(), student.getYcol(), student.getPms()));
             }
-
 
 
         }
@@ -375,7 +374,7 @@ public class MainController implements Initializable {
         File file = new File(filename);
 
         Desktop desktop = Desktop.getDesktop();
-       // if(file.exists()) desktop.open(file);
+        // if(file.exists()) desktop.open(file);
     }
 
     @FXML
@@ -401,14 +400,11 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void handleComboBoxAction(ActionEvent event) {    }
+    private void handleComboBoxAction(ActionEvent event) {
+    }
 
     @FXML
     private void interpolate(ActionEvent actionEvent) {
         browseFile();
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 859ea3c7a356d32f5f98e12eeffc3b3649b5a969
