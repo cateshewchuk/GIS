@@ -5,6 +5,8 @@ module gis.app {
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
     requires org.kordamp.bootstrapfx.core;
+    requires javafx.graphics;
+    requires java.desktop;
 
     opens gis.app to javafx.fxml;
     exports gis.app;

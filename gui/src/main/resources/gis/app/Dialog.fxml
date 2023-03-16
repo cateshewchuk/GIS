@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<DialogPane prefHeight="161.0" prefWidth="494.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gis.app.DialogController">
+
+    <content>
+        <GridPane hgap="5" prefHeight="116.0" prefWidth="304.0" vgap="5">
+            <Label prefHeight="17.0" prefWidth="80.0" text="Input Data Set" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <TextField fx:id="InitialFilePath" prefHeight="25.0" prefWidth="276.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+            <Label prefHeight="17.0" prefWidth="133.0" text="Location Data Set" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <TextField fx:id="interpolateDataFilePath" prefHeight="25.0" prefWidth="108.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+            <Label text="Time Domain" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+         <ComboBox fx:id="timeDomain" prefHeight="25.0" prefWidth="265.0" promptText="Select Time Domain" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
+         <Button ellipsisString="" mnemonicParsing="false" onAction="#initialDataImport" prefHeight="35.0" prefWidth="37.0" GridPane.columnIndex="2">
+            <graphic>
+               <ImageView fitHeight="21.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                     <Image url="@1215230_download_folder_import_mac_arrow_icon.png" />
+                  </image>
+               </ImageView>
+            </graphic></Button>
+         <Button ellipsisString="" mnemonicParsing="false" onAction="#DataInterpolateDialog" GridPane.columnIndex="2" GridPane.rowIndex="1">
+            <graphic>
+               <ImageView fitHeight="20.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                     <Image url="@1215230_download_folder_import_mac_arrow_icon.png" />
+                  </image>
+               </ImageView>
+            </graphic></Button>
+
+            <columnConstraints>
+                <ColumnConstraints />
+                <ColumnConstraints hgrow="ALWAYS" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
+        </GridPane>
+    </content>
+
+    <buttonTypes>
+        <ButtonType fx:id="connectButtonType" buttonData="OK_DONE" text="Submit" />
+        <ButtonType buttonData="CANCEL_CLOSE" text="Cancel" />
+    </buttonTypes>
+</DialogPane>
