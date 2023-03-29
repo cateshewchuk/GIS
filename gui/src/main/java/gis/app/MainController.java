@@ -47,8 +47,7 @@ public class MainController implements Initializable {
     public ComboBox<String> timeDomain;
     public String filepathInitialData = "";
     public String filepathInterpolateData = "";
-    private Object selected = "Day.";
-
+    private Object selected = "Day";
     private String timeF = "";
     private ObservableList<gis.app.MasterTable> masterTable = FXCollections.observableArrayList();
 
@@ -57,30 +56,103 @@ public class MainController implements Initializable {
 
     // create GENERAL hashmap of arrays with key being equal to [x,y] and the object will data
     private Map<String, HashMap<Integer, Location>> dataPoints = new HashMap<String, HashMap<Integer, Location>>();
+    private HashMap<String, Double> pm2009 =  new HashMap<>();
 
-    // what the outputlooks like
+
+    // what the output looks like FOR THE GENERAL ARRAY WITH LOCATION CLASS
    /* Parent Key=-85.818021, 39.807323 [ {Month Key=1, value=x = -85.818021   y = 39.807323
     Day/Measurement = [{1=0.0, 2=0.0, 3=0.0, 4=0.0, 5=0.0, 6=0.0, 7=0.0, 8=0.0, 9=0.0, 10=0.0, 11=0.0, 12=0.0, 13=0.0, 14=0.0, 15=0.0, 16=0.0, 17=0.0, 18=0.0, 19=0.0, 20=0.0, 21=0.0, 22=0.0, 23=0.0, 24=0.0, 25=0.0, 26=0.0, 27=0.0, 28=0.0, 29=0.0, 30=0.0, 31=0.0}] }]*/
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        importBtn.fireEvent(new ActionEvent());
-        //importInitialFile();
-    }
 
-    public static List getDatesBetweenUsingJava7(Date startDate, Date endDate) {
-        List datesInRange = new ArrayList<>();
-        Calendar calendar = getCalendarWithoutTime(startDate);
-        Calendar endCalendar = getCalendarWithoutTime(endDate);
+        /* EVERYTHING IN THE INITIALIZER IS TO JUST FIGURE OUT HOW TO GET PM2009 INTO A MATRIX A*/
+        Path initialDataSetPath = Paths.get("C:\\Users\\ksweat\\Downloads\\pm25_2009_measured.txt");
 
-        while (calendar.before(endCalendar)) {
-            Date result = calendar.getTime();
-            datesInRange.add(result);
-            calendar.add(Calendar.DATE, 1);
+        // get array of dates
+        LocalDate ld = LocalDate.of(2009, Month.JANUARY, 1);
+        LocalDate endDate = ld.plusYears(1);
+
+        List<LocalDate> workDays = new ArrayList<>(365);
+
+        while (ld.isBefore(endDate)) {
+            workDays.add(ld);
+            ld = ld.plusDays(1);
         }
 
-        return datesInRange;
+        Double counter = 0.0;
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        List<String> formats = workDays.stream().map(value -> value.format(format)).collect(Collectors.toList());
+        for (String value : formats) {
+            // Parses the date
+            LocalDate dt = LocalDate.parse(value);
+            int d = dt.getDayOfMonth();
+            Month m = dt.getMonth();
+            String param = m.toString() + Integer.toString(d);
+            counter++;
+            pm2009.put(param, counter);
+        }
+
+        //System.out.println(pm2009);
+
+        ///dataPoints.get("-86.501121, 32.500172").get(1).setDay(1, 2.0);
+        /* loop through initial data input set */
+        try (BufferedReader br2 = Files.newBufferedReader(initialDataSetPath,
+                StandardCharsets.US_ASCII)) {
+
+            // read the first line from the text file
+            String line2 = br2.readLine();
+            // start loop at 2nd line, skipping first line
+
+            // row incrementer to set the matrix row, used of pm2009
+            int row = 0;
+            // find and set the total number of rows in pm2009
+            long lines = 0;
+            lines = Files.lines(initialDataSetPath).count();
+            Integer lineLength = new Integer((int) lines);
+
+            // pm2009 matrix
+            double[][] A = new double[lineLength][4];
+            //country matrix
+            double[][] B = new double[lineLength][3];
+
+            while ((line2 = br2.readLine()) != null) {
+                String[] attributes2 = line2.split("\\s+");
+                String dataSourceKey2 = attributes2[4] + ", " + attributes2[5];
+                int month2 = Integer.parseInt(attributes2[2]);
+                int day2 = Integer.parseInt(attributes2[3]);
+                Double pm25 = Double.parseDouble(attributes2[6]);
+               String currentMonth = Month.of(month2).name();
+               String newParam = currentMonth.toString() + Integer.toString(day2);
+
+                //A.add({attributes2[4], attributes2[5], attributes2[6]});
+                A[row][0] = pm2009.get(newParam);
+                A[row][1] = Double.valueOf(attributes2[4]);
+                A[row][2] = Double.valueOf(attributes2[5]);
+                A[row][3] = pm25;
+
+                row++;
+
+            }
+
+            // print data of each row
+            for (double[] eachRow : A) {
+               System.out.println(Arrays.toString(eachRow));
+            }
+            //System.out.println("A");
+           // System.out.println(A[0][3]);
+
+
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+
+
+
+
+        importBtn.fireEvent(new ActionEvent());
     }
+
 
     private static Calendar getCalendarWithoutTime(Date date) {
         Calendar calendar = new GregorianCalendar();
@@ -151,6 +223,7 @@ public class MainController implements Initializable {
         createFile();
     }
 
+    /*THIS IS READING THE COUNTRY.TXT FILE AND CREATING ALL THE ROWS AND COLUMNS AND SETTING UP THE LOCATION CLASS*/
     private List<MasterTable> readNewFile(String fileName) {
         List<MasterTable> metricsss = new ArrayList<>();
 
@@ -171,7 +244,7 @@ public class MainController implements Initializable {
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         List<String> formats = workDays.stream().map(value -> value.format(format)).collect(Collectors.toList());
 
-
+        // loop through country.txt file
         try (BufferedReader br = Files.newBufferedReader(pathToFile,
                 StandardCharsets.UTF_16LE)) {
             String line = br.readLine();
@@ -219,9 +292,11 @@ public class MainController implements Initializable {
         }
 
         //make sure row length and hashmap length match, to verify all points are being imported
-        System.out.println(dataPoints.size());
-        System.out.println(lineCount);
+        //System.out.println(dataPoints.size());
+        //System.out.println(lineCount);
 
+        // imports pm29, THIS ISN'T RELEVANT, I THOUGH THERE MIGHT BE SOME MATCHES BETWEEN THE 2 FILES
+        // BUT IT SHOWS YOU HOW YOU CAN UPDATE THE LOCATION CLASS
         Path initialDataSetPath = Paths.get(filepathInitialData);
         ///dataPoints.get("-86.501121, 32.500172").get(1).setDay(1, 2.0);
         /* loop through initial data input set */
@@ -237,6 +312,7 @@ public class MainController implements Initializable {
                 int month2 = Integer.parseInt(attributes2[2]);
                 int day2 = Integer.parseInt(attributes2[3]);
                 Double pm25 = Double.parseDouble(attributes2[6]);
+
                 //System.out.println(dataSourceKey2);
                 //dataPoints.get("-110.76118, 43.47808").get(1).setDay(1, 2.0);
 
@@ -247,8 +323,6 @@ public class MainController implements Initializable {
                     //System.out.println(dataPoints.get(dataSourceKey2));
                     dataPoints.get(dataSourceKey2).get(month2).setDay(day2, pm25);
                 }
-
-
             }
 
         } catch (IOException ioe) {
@@ -256,6 +330,9 @@ public class MainController implements Initializable {
         }
 
 
+        /*Loop Through add the params to the MasterTable Class,
+        this is how I am adding id, year, month, day, x, y, pm to the table gui
+        and then looping through and writing it to text file */
         for (Map.Entry<String, HashMap<Integer, Location>> entryA : dataPoints.entrySet()) {
             String[] attr = new String[7];
 
@@ -320,7 +397,21 @@ public class MainController implements Initializable {
         );
     }
 
+    public static List<Date> getDaysBetweenDates(Date startDate, Date endDate){
+        ArrayList<Date> dates = new ArrayList<Date>();
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(startDate);
 
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(endDate);
+
+        while(cal1.before(cal2) || cal1.equals(cal2))
+        {
+            dates.add(cal1.getTime());
+            cal1.add(Calendar.DATE, 1);
+        }
+        return dates;
+    }
     /*This creates a flat string array, organizes data, so it cant be neatly print to gui and output file */
 
     private MasterTable createPrettyData(String[] metadata) {

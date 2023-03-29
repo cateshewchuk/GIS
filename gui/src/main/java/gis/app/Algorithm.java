@@ -153,7 +153,7 @@ public class Algorithm {
         double[][] results = res(A, B);
 
         System.out.print("This is the interpolated value at the query point on March 5: ");
-        System.out.println(results[0][3]);
+        System.out.println(A[0][3]);
 
         System.out.print("Interpolated time of location 1 on March 6: ");
         System.out.println(interpolateTime(A, mar6));
