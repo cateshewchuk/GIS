@@ -24,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.awt.Desktop;
 import java.util.stream.Collectors;
+import static java.util.Map.entry;
 
 import static java.lang.Integer.sum;
 
@@ -54,9 +55,18 @@ public class MainController implements Initializable {
     // Create a HashMap object called capitalCities
     private HashMap<String, Location> capitalCities = new HashMap<String, Location>();
 
-    // create GENERAL hashmap of arrays with key being equal to [x,y] and the object will data
-    private Map<String, HashMap<Integer, Location>> dataPoints = new HashMap<String, HashMap<Integer, Location>>();
-    private HashMap<String, Double> pm2009 =  new HashMap<>();
+    /*This is a static HashMap that tracks all the locations that must be solved for, aka County
+
+      String - "x, y" where x and y are the x and y values of the location.
+      Location - Location class object
+    */
+    private static HashMap<String, Location> locationsToSolve = new HashMap<>();
+    /*This is a static HashMap that tracks the locations and the data given for them, aka PM2009
+
+      String - "x, y" where x and y are the x and y values of the location.
+      Location - Location class object
+    */
+    private static HashMap<String, Location> locationDataGiven = new HashMap<>();
 
 
     // what the output looks like FOR THE GENERAL ARRAY WITH LOCATION CLASS
@@ -90,7 +100,8 @@ public class MainController implements Initializable {
             Month m = dt.getMonth();
             String param = m.toString() + Integer.toString(d);
             counter++;
-            pm2009.put(param, counter);
+            // TODO: This was broken by locationDataGiven refactor below, this needs to be fixed.
+            //locationDataGiven.put(param, counter);
         }
 
         //System.out.println(pm2009);
@@ -126,7 +137,8 @@ public class MainController implements Initializable {
                String newParam = currentMonth.toString() + Integer.toString(day2);
 
                 //A.add({attributes2[4], attributes2[5], attributes2[6]});
-                A[row][0] = pm2009.get(newParam);
+                // TODO: This was broken by locationDataGiven refactor below, this needs to be fixed.
+                //A[row][0] = locationDataGiven.get(newParam);
                 A[row][1] = Double.valueOf(attributes2[4]);
                 A[row][2] = Double.valueOf(attributes2[5]);
                 A[row][3] = pm25;
@@ -198,7 +210,7 @@ public class MainController implements Initializable {
 
 
         /* Upload Data to Table */
-        List<MasterTable> metric = readNewFile(this.filepathInterpolateData);
+        List<MasterTable> metric = readToSolveLocations(this.filepathInterpolateData);
         masterTable = FXCollections.observableArrayList(metric);
 
         id.setCellValueFactory(new PropertyValueFactory<>("tableID"));
@@ -224,7 +236,7 @@ public class MainController implements Initializable {
     }
 
     /*THIS IS READING THE COUNTRY.TXT FILE AND CREATING ALL THE ROWS AND COLUMNS AND SETTING UP THE LOCATION CLASS*/
-    private List<MasterTable> readNewFile(String fileName) {
+    private List<MasterTable> readToSolveLocations(String fileName) {
         List<MasterTable> metricsss = new ArrayList<>();
 
         Path pathToFile = Paths.get(fileName);
@@ -255,31 +267,10 @@ public class MainController implements Initializable {
                 Double y = Double.valueOf(attributes[2]);
                 String dataSourceKey = attributes[1] + ", " + attributes[2];
 
-                //create array of employee object
-                Location[] loc = new Location[12];
-                HashMap<Integer, Location> monthstocome = new HashMap<>();
 
                 Location newLoc = new Location(x, y, Integer.parseInt(attributes[0]));
+                locationsToSolve.put(dataSourceKey, newLoc);
 
-                for (int i = 0; i < 12; i++) {
-                    int a = sum(i, 1);
-                    monthstocome.put(a, newLoc);
-
-                    //loc[i] = new Location(x,y);
-                    for (String value : formats) {
-                        // Parses the date
-                        LocalDate dt = LocalDate.parse(value);
-                        int d = dt.getDayOfMonth();
-                        int m = dt.getMonthValue();
-                        //if month equals month then set day
-                        if (m == a) {
-                            //loc[i].setDay(d, 0.0);
-                            newLoc.setDay(d, 0.0);
-                        }
-                    }
-                }
-
-                dataPoints.put(dataSourceKey, monthstocome);
                 lineCount++;
 
 
@@ -295,51 +286,17 @@ public class MainController implements Initializable {
         //System.out.println(dataPoints.size());
         //System.out.println(lineCount);
 
-        // imports pm29, THIS ISN'T RELEVANT, I THOUGH THERE MIGHT BE SOME MATCHES BETWEEN THE 2 FILES
-        // BUT IT SHOWS YOU HOW YOU CAN UPDATE THE LOCATION CLASS
-        Path initialDataSetPath = Paths.get(filepathInitialData);
-        ///dataPoints.get("-86.501121, 32.500172").get(1).setDay(1, 2.0);
-        /* loop through initial data input set */
-        try (BufferedReader br2 = Files.newBufferedReader(initialDataSetPath,
-                StandardCharsets.US_ASCII)) {
-
-            // read the first line from the text file
-            String line2 = br2.readLine();
-            // start loop at 2nd line, skipping first line
-            while ((line2 = br2.readLine()) != null) {
-                String[] attributes2 = line2.split("\\s+");
-                String dataSourceKey2 = attributes2[4] + ", " + attributes2[5];
-                int month2 = Integer.parseInt(attributes2[2]);
-                int day2 = Integer.parseInt(attributes2[3]);
-                Double pm25 = Double.parseDouble(attributes2[6]);
-
-                //System.out.println(dataSourceKey2);
-                //dataPoints.get("-110.76118, 43.47808").get(1).setDay(1, 2.0);
-
-                // Check is key exists in the Map
-                boolean isKeyPresent = dataPoints.containsKey(dataSourceKey2);
-                if (isKeyPresent) {
-                    // insert default measurements associated with locations and month, day, years
-                    //System.out.println(dataPoints.get(dataSourceKey2));
-                    dataPoints.get(dataSourceKey2).get(month2).setDay(day2, pm25);
-                }
-            }
-
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-
 
         /*Loop Through add the params to the MasterTable Class,
         this is how I am adding id, year, month, day, x, y, pm to the table gui
         and then looping through and writing it to text file */
-        for (Map.Entry<String, HashMap<Integer, Location>> entryA : dataPoints.entrySet()) {
+        for (Map.Entry<String, Location> entryA : locationsToSolve.entrySet()) {
             String[] attr = new String[7];
 
             // get the xy key
             String xyKey = entryA.getKey();
             // get the month hashmap associated with xy
-            HashMap<Integer, Location> monthLocAssocKey = entryA.getValue();
+            Location loc = entryA.getValue();
             //System.out.println("Parent XY Key=" + xyKey);
             for (Map.Entry<Integer, Location> entryB : monthLocAssocKey.entrySet()) {
                 Integer monthKey = entryB.getKey();
@@ -389,12 +346,73 @@ public class MainController implements Initializable {
         return metricsss;
     }
 
+    /* This method reads in the data for the locations already given and stores them into locationDataGiven.
+    * This method does not interact with the GUI at all
+    */
+    private void readDataGivenLocations(String fileName) {
+        Path pathToFile = Paths.get(fileName);
+
+        // Reads file
+        try (BufferedReader br = Files.newBufferedReader(pathToFile)) {
+            String line = br.readLine();
+
+            // Continues reading until no more lines exist
+            while (line != null) {
+                // Splits line based on regex
+                String[] attributes = line.split("\\s+");
+
+                // Variables retrieved
+                // TODO: Needs to handle year eventually
+                int id = Integer.parseInt(attributes[0]);
+                int month = Integer.parseInt(attributes[2]);
+                int day = Integer.parseInt(attributes[3]);
+                double x = Double.parseDouble(attributes[4]);
+                double y = Double.parseDouble(attributes[5]);
+                double pm25 = Double.parseDouble(attributes[6]);
+
+                String key = attributes[4] + ", " + attributes[5];
+
+                // Checks if the HashMap already has Location. If not, create the location.
+                if (!locationDataGiven.containsKey(key)) {
+                    Location newLoc = new Location(x, y, id);
+                    locationDataGiven.put(key, newLoc);
+                }
+
+                // Converts month and day to just day
+                int newDay = transcribeMonthDay(day, month);
+
+                // Adds new data point to location object
+                locationDataGiven.get(key).setDay(newDay, pm25);
+
+                line = br.readLine();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
     // sort table
     public static void sort(List<MasterTable> list) {
         list.sort((o1, o2)
                 -> Integer.valueOf(o1.getTableID()).compareTo(
                 Integer.valueOf(o2.getTableID()))
         );
+    }
+
+    // Converts month and day to just a day between 1-365.
+    private int transcribeMonthDay(int day, int month) {
+        int[][] monthDict = {{1, 0}, {2, 31}, {3, 59}, {4, 90}, {5, 120}, {6, 151},
+                            {7, 181}, {8, 212}, {9, 243}, {10, 273}, {11, 304}, {12, 334}};
+
+        HashMap<Integer, Integer> map = new HashMap();
+
+        for (int[] array : monthDict) {
+            if (array[0] == month) {
+                return array[1] + day;
+            }
+        }
+
+        return -1;
     }
 
     public static List<Date> getDaysBetweenDates(Date startDate, Date endDate){
@@ -487,7 +505,12 @@ public class MainController implements Initializable {
         filepathInitialData = DialogModel.getInstance().getInitialFilePath().getText();
         filepathInterpolateData = DialogModel.getInstance().getfilepathInitialData().getText();
         selected = (String) DialogModel.getInstance().gettimeDomain().getValue();
+
+        // This sets the data that needs to be interpolated both for the GUI and the locationsToSolve HashMap
         locationDataSetImport(filepathInterpolateData);
+
+        // This sets the locationDataGiven HashMap
+        readDataGivenLocations(filepathInitialData);
     }
 
     @FXML
@@ -498,4 +521,6 @@ public class MainController implements Initializable {
     private void interpolate(ActionEvent actionEvent) {
         browseFile();
     }
+
+
 }
