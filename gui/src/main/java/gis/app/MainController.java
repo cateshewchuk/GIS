@@ -55,6 +55,10 @@ public class MainController implements Initializable {
     // Create a HashMap object called capitalCities
     private HashMap<String, Location> capitalCities = new HashMap<String, Location>();
 
+    // Dict to encode month and day into just day
+    final private int[][] MONTH_DICT = {{1, 0}, {2, 31}, {3, 59}, {4, 90}, {5, 120}, {6, 151},
+                                       {7, 181}, {8, 212}, {9, 243}, {10, 273}, {11, 304}, {12, 334}};
+
     /*This is a static HashMap that tracks all the locations that must be solved for, aka County
 
       String - "x, y" where x and y are the x and y values of the location.
@@ -77,7 +81,7 @@ public class MainController implements Initializable {
 
 
         /* EVERYTHING IN THE INITIALIZER IS TO JUST FIGURE OUT HOW TO GET PM2009 INTO A MATRIX A*/
-        Path initialDataSetPath = Paths.get("C:\\Users\\ksweat\\Downloads\\pm25_2009_measured.txt");
+        //Path initialDataSetPath = Paths.get("C:\\Users\\ksweat\\Downloads\\pm25_2009_measured.txt");
 
         // get array of dates
         LocalDate ld = LocalDate.of(2009, Month.JANUARY, 1);
@@ -108,6 +112,7 @@ public class MainController implements Initializable {
 
         ///dataPoints.get("-86.501121, 32.500172").get(1).setDay(1, 2.0);
         /* loop through initial data input set */
+        /*
         try (BufferedReader br2 = Files.newBufferedReader(initialDataSetPath,
                 StandardCharsets.US_ASCII)) {
 
@@ -161,7 +166,7 @@ public class MainController implements Initializable {
 
 
 
-
+        */
         importBtn.fireEvent(new ActionEvent());
     }
 
@@ -296,50 +301,47 @@ public class MainController implements Initializable {
             // get the xy key
             String xyKey = entryA.getKey();
             // get the month hashmap associated with xy
-            Location loc = entryA.getValue();
+            Location locObj = entryA.getValue();
             //System.out.println("Parent XY Key=" + xyKey);
-            for (Map.Entry<Integer, Location> entryB : monthLocAssocKey.entrySet()) {
-                Integer monthKey = entryB.getKey();
-                Location locObj = entryB.getValue();
 
-                // print out hashmap for key month = obj location association
-                // month key is the month points were taken
-                //System.out.println("Month Key=" + monthKey + ", value=" + value2.showData() );
-                // set id
-                attr[0] = Integer.toString(locObj.getID());
-                // set year
-                attr[1] = "2009"; // pass in year someway
+            // print out hashmap for key month = obj location association
+            // month key is the month points were taken
+            //System.out.println("Month Key=" + monthKey + ", value=" + value2.showData() );
+            // set id
+            attr[0] = Integer.toString(locObj.getID());
+            // set year
+            // TODO: Can't assume year is always 2009, fix in the future
+            attr[1] = "2009"; // pass in year someway
 
-                // loop through the days to set day, month and pms
-                for (Map.Entry<Integer, Double> entryC : locObj.getDayValueDictionary().entrySet()) {
-                    Integer day = entryC.getKey();
-                    // set month
-                    attr[2] = Integer.toString(monthKey);
-                    Double measurement = entryC.getValue();
+            // loop through the days to set day, month and pms
+            for (Map.Entry<Integer, Double> entryC : locObj.getDayValueDictionary().entrySet()) {
+                // Decodes day value (1-365) into [month, day]
+                int[] decodedMonthDay = decodeMonthDay(entryC.getKey());
 
-                    // set day
-                    attr[3] = Integer.toString(day);
-                    // set pm25
-                    attr[6] = Double.toString(measurement);
+                // set month
+                attr[2] = Integer.toString(decodedMonthDay[0]);
 
-                    // set x
-                    attr[4] = Double.toString(locObj.getX());
+                // set day
+                attr[3] = Integer.toString(decodedMonthDay[1]);
+                // set pm25
+                attr[6] = Double.toString(entryC.getValue());
 
-                    // set y
-                    attr[5] = Double.toString(locObj.getY());
+                // set x
+                attr[4] = Double.toString(locObj.getX());
 
-                    MasterTable valueOfMetric = createPrettyData(attr);
-                    metricsss.add(valueOfMetric); // adding metric into ArrayList
-                }
+                // set y
+                attr[5] = Double.toString(locObj.getY());
 
+                MasterTable valueOfMetric = createPrettyData(attr);
+                metricsss.add(valueOfMetric); // adding metric into ArrayList
             }
+
+        }
 
 
                /* Another way to print it out
                for(Location val : value.values()) {System.out.println(val.showData());}*/
             //System.out.println("\n");
-
-        }
 
 
         sort(metricsss);
@@ -401,18 +403,26 @@ public class MainController implements Initializable {
 
     // Converts month and day to just a day between 1-365.
     private int transcribeMonthDay(int day, int month) {
-        int[][] monthDict = {{1, 0}, {2, 31}, {3, 59}, {4, 90}, {5, 120}, {6, 151},
-                            {7, 181}, {8, 212}, {9, 243}, {10, 273}, {11, 304}, {12, 334}};
-
-        HashMap<Integer, Integer> map = new HashMap();
-
-        for (int[] array : monthDict) {
+        for (int[] array : MONTH_DICT) {
             if (array[0] == month) {
                 return array[1] + day;
             }
         }
 
+        // If the month somehow does not match
         return -1;
+    }
+
+    // Decodes a month and day from a transcribed day in transcribeMonthDay
+    private int[] decodeMonthDay(int day) {
+        for (int i = 11; i >= 0; i--) {
+            if (day > MONTH_DICT[i][1]) {
+                return new int[]{MONTH_DICT[i][0], day - MONTH_DICT[i][1]};
+            }
+        }
+
+        // If the month somehow does not match
+        return new int[]{-1, -1};
     }
 
     public static List<Date> getDaysBetweenDates(Date startDate, Date endDate){
