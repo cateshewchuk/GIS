@@ -313,18 +313,21 @@ public class MainController implements Initializable {
             // TODO: Can't assume year is always 2009, fix in the future
             attr[1] = "2009"; // pass in year someway
 
+
             // loop through the days to set day, month and pms
-            for (Map.Entry<Integer, Double> entryC : locObj.getDayValueDictionary().entrySet()) {
+            // TODO: This only handles days currently, should handle months and years in future. Also does not account
+            //  for leap years.
+            for (int i = 1; i < 366; i++) {
                 // Decodes day value (1-365) into [month, day]
-                int[] decodedMonthDay = decodeMonthDay(entryC.getKey());
+                int[] decodedMonthDay = decodeMonthDay(i);
 
                 // set month
                 attr[2] = Integer.toString(decodedMonthDay[0]);
 
                 // set day
                 attr[3] = Integer.toString(decodedMonthDay[1]);
-                // set pm25
-                attr[6] = Double.toString(entryC.getValue());
+                // set pm25, either by getting an existing value or leaving it blank to indicate no data
+                attr[6] = locObj.getDayValueDictionary().containsKey(i) ? Double.toString(locObj.getDay(i)) : "0.0";
 
                 // set x
                 attr[4] = Double.toString(locObj.getX());
