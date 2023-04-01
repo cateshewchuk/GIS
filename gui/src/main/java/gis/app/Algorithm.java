@@ -10,7 +10,7 @@ public class Algorithm {
      * measured value
      * B - matrix of query points in the form [t x y], where
      * t = time, x, y = location coordinates
-     * dtMesh (optional) - the triangulation used to perform
+     * dtMesh (optional) - the gis.triangulation used to perform
      * the interpolation
      * Da (optional) = a matrix containing the time interpolated
      * values for all locations in A;
