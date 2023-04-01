@@ -25,6 +25,15 @@ public class Location {
     private double y;
     private int ID;
 
+    /* TODO: This only handles a single year currently. A new HashMap should be created in the form of
+        HashMap<Integer, HashMap<Integer, Double>>, to handle each year having a day value dict. Should only be approached
+        after single year is finished.
+
+        TODO: Does not currently handle Leap Years. Would fix in tandem with Year fix.
+        Integer: Represents the day from 1-365
+
+        Double: Represents the PM2.5 level.
+     */
     private HashMap<Integer, Double> dayValueDictionary;
 
     public Location (double x, double y, int ID) {
