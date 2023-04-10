@@ -362,7 +362,7 @@ public class MainController implements Initializable {
             String line = br.readLine();
 
             // Continues reading until no more lines exist
-            while (line != null) {
+            while ((line = br.readLine()) != null) {
                 // Splits line based on regex
                 String[] attributes = line.split("\\s+");
 
