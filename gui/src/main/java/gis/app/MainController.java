@@ -359,10 +359,11 @@ public class MainController implements Initializable {
 
         // Reads file
         try (BufferedReader br = Files.newBufferedReader(pathToFile)) {
-            String line = br.readLine();
-
+                String line = br.readLine();
+            l   ine = br.readLine();// skip column names
+            
             // Continues reading until no more lines exist
-            while ((line = br.readLine()) != null) {
+            while (line != null) {
                 // Splits line based on regex
                 String[] attributes = line.split("\\s+");
 
