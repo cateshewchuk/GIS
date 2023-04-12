@@ -24,9 +24,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.awt.Desktop;
 import java.util.stream.Collectors;
-import static java.util.Map.entry;
 
-import static java.lang.Integer.sum;
+import static java.time.temporal.ChronoUnit.*;
 
 
 public class MainController implements Initializable {
@@ -49,7 +48,10 @@ public class MainController implements Initializable {
     public String filepathInitialData = "";
     public String filepathInterpolateData = "";
     private Object selected = "Day";
-    private String timeF = "";
+    private Integer startYear = 0;
+    private Integer endYear = 0;
+
+
     private ObservableList<gis.app.MasterTable> masterTable = FXCollections.observableArrayList();
 
     // Create a HashMap object called capitalCities
@@ -80,96 +82,8 @@ public class MainController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
 
-        /* EVERYTHING IN THE INITIALIZER IS TO JUST FIGURE OUT HOW TO GET PM2009 INTO A MATRIX A*/
-        //Path initialDataSetPath = Paths.get("C:\\Users\\ksweat\\Downloads\\pm25_2009_measured.txt");
-
-        // get array of dates
-        LocalDate ld = LocalDate.of(2009, Month.JANUARY, 1);
-        LocalDate endDate = ld.plusYears(1);
-
-        List<LocalDate> workDays = new ArrayList<>(365);
-
-        while (ld.isBefore(endDate)) {
-            workDays.add(ld);
-            ld = ld.plusDays(1);
-        }
-
-        Double counter = 0.0;
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        List<String> formats = workDays.stream().map(value -> value.format(format)).collect(Collectors.toList());
-        for (String value : formats) {
-            // Parses the date
-            LocalDate dt = LocalDate.parse(value);
-            int d = dt.getDayOfMonth();
-            Month m = dt.getMonth();
-            String param = m.toString() + Integer.toString(d);
-            counter++;
-            // TODO: This was broken by locationDataGiven refactor below, this needs to be fixed.
-            //locationDataGiven.put(param, counter);
-        }
-
-        //System.out.println(pm2009);
-
-        ///dataPoints.get("-86.501121, 32.500172").get(1).setDay(1, 2.0);
-        /* loop through initial data input set */
-        /*
-        try (BufferedReader br2 = Files.newBufferedReader(initialDataSetPath,
-                StandardCharsets.US_ASCII)) {
-
-            // read the first line from the text file
-            String line2 = br2.readLine();
-            // start loop at 2nd line, skipping first line
-
-            // row incrementer to set the matrix row, used of pm2009
-            int row = 0;
-            // find and set the total number of rows in pm2009
-            long lines = 0;
-            lines = Files.lines(initialDataSetPath).count();
-            Integer lineLength = new Integer((int) lines);
-
-            // pm2009 matrix
-            double[][] A = new double[lineLength][4];
-            //country matrix
-            double[][] B = new double[lineLength][3];
-
-            while ((line2 = br2.readLine()) != null) {
-                String[] attributes2 = line2.split("\\s+");
-                String dataSourceKey2 = attributes2[4] + ", " + attributes2[5];
-                int month2 = Integer.parseInt(attributes2[2]);
-                int day2 = Integer.parseInt(attributes2[3]);
-                Double pm25 = Double.parseDouble(attributes2[6]);
-               String currentMonth = Month.of(month2).name();
-               String newParam = currentMonth.toString() + Integer.toString(day2);
-
-                //A.add({attributes2[4], attributes2[5], attributes2[6]});
-                // TODO: This was broken by locationDataGiven refactor below, this needs to be fixed.
-                //A[row][0] = locationDataGiven.get(newParam);
-                A[row][1] = Double.valueOf(attributes2[4]);
-                A[row][2] = Double.valueOf(attributes2[5]);
-                A[row][3] = pm25;
-
-                row++;
-
-            }
-
-            // print data of each row
-            for (double[] eachRow : A) {
-               System.out.println(Arrays.toString(eachRow));
-            }
-            //System.out.println("A");
-           // System.out.println(A[0][3]);
-
-
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-
-
-
-        */
         importBtn.fireEvent(new ActionEvent());
     }
-
 
     private static Calendar getCalendarWithoutTime(Date date) {
         Calendar calendar = new GregorianCalendar();
@@ -182,7 +96,6 @@ public class MainController implements Initializable {
         return calendar;
     }
     /* Get Initial Data Set File */
-
 
     private void locationDataSetImport(String filepathInterpolateData) {
         //List<MasterTable> iFile =
@@ -213,7 +126,6 @@ public class MainController implements Initializable {
         TableColumn y = new TableColumn("Y");
         TableColumn pms = new TableColumn("PM25");
 
-
         /* Upload Data to Table */
         List<MasterTable> metric = readToSolveLocations(this.filepathInterpolateData);
         masterTable = FXCollections.observableArrayList(metric);
@@ -225,7 +137,6 @@ public class MainController implements Initializable {
             case "Day" -> table.getColumns().addAll(id, year, month, day, x, y, pms);
             case "Year" -> table.getColumns().addAll(id, year, x, y, pms);
             case "Month" -> table.getColumns().addAll(id, year, month, x, y, pms);
-
         }
 
         month.setCellValueFactory(new PropertyValueFactory<>("Month"));
@@ -247,20 +158,6 @@ public class MainController implements Initializable {
         Path pathToFile = Paths.get(fileName);
         int lineCount = 0;
 
-        // get array of dates
-        LocalDate ld = LocalDate.of(2009, Month.JANUARY, 1);
-        LocalDate endDate = ld.plusYears(1);
-
-        List<LocalDate> workDays = new ArrayList<>(365);
-
-        while (ld.isBefore(endDate)) {
-            workDays.add(ld);
-            ld = ld.plusDays(1);
-        }
-
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        List<String> formats = workDays.stream().map(value -> value.format(format)).collect(Collectors.toList());
-
         // loop through country.txt file
         try (BufferedReader br = Files.newBufferedReader(pathToFile,
                 StandardCharsets.UTF_16LE)) {
@@ -272,13 +169,10 @@ public class MainController implements Initializable {
                 Double y = Double.valueOf(attributes[2]);
                 String dataSourceKey = attributes[1] + ", " + attributes[2];
 
-
                 Location newLoc = new Location(x, y, Integer.parseInt(attributes[0]));
                 locationsToSolve.put(dataSourceKey, newLoc);
 
                 lineCount++;
-
-
             }
 
         } catch (FileNotFoundException e) {
@@ -290,6 +184,48 @@ public class MainController implements Initializable {
         //make sure row length and hashmap length match, to verify all points are being imported
         //System.out.println(dataPoints.size());
         //System.out.println(lineCount);
+        // get array of dates
+        LocalDate ld = LocalDate.of(startYear, Month.JANUARY, 1);
+        LocalDate endDate = LocalDate.of(endYear, Month.DECEMBER, 31);
+        endDate = endDate.plusDays(1);
+        long daysBetween = DAYS.between(ld, endDate);
+
+        switch (selected.toString()) {
+            case "Day":
+                daysBetween = DAYS.between(ld, endDate);
+                break;
+            case "Year":
+                daysBetween = YEARS.between(ld, endDate);
+                break;
+            case "Month":
+                daysBetween = MONTHS.between(ld, endDate);
+                break;
+        }
+
+        List<LocalDate> workDays = new ArrayList<>(Integer.parseInt(String.valueOf(daysBetween)));
+
+        while (ld.isBefore(endDate)) {
+            workDays.add(ld);
+            ld = ld.plusDays(1);
+        }
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        switch (selected.toString()) {
+            case "Day":
+                format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                break;
+            case "Year":
+                format = DateTimeFormatter.ofPattern("yyyy");
+                break;
+            case "Month":
+                format = DateTimeFormatter.ofPattern("yyyy-MM");
+                break;
+        }
+        DateTimeFormatter finalFormat = format;
+        List<String> formats = workDays.stream().map(value -> value.format(finalFormat)).collect(Collectors.toList());
+        List<String> listDistinct = formats.stream().distinct().collect(Collectors.toList());
+        //String collectDistinct = listDistinct.stream().collect(Collectors.joining(", "));
+        //System.out.println(collectDistinct);
 
 
         /*Loop Through add the params to the MasterTable Class,
@@ -309,23 +245,29 @@ public class MainController implements Initializable {
             //System.out.println("Month Key=" + monthKey + ", value=" + value2.showData() );
             // set id
             attr[0] = Integer.toString(locObj.getID());
-            // set year
-            // TODO: Can't assume year is always 2009, fix in the future
-            attr[1] = "2009"; // pass in year someway
-
 
             // loop through the days to set day, month and pms
-            // TODO: This only handles days currently, should handle months and years in future. Also does not account
-            //  for leap years.
-            for (int i = 1; i < 366; i++) {
-                // Decodes day value (1-365) into [month, day]
-                int[] decodedMonthDay = decodeMonthDay(i);
+           for (int i = 0; i < daysBetween; i++) {
+              //  System.out.println(i);
+
+               String dt[]= listDistinct.get(i).split("-");
+             //  System.out.println(dt[0]);
+
+               int y = Integer.parseInt(dt[0]);
+                // set year
+                attr[1] = Integer.toString(y);
+               attr[2] = String.valueOf(0);
+               attr[3] = String.valueOf(0);
 
                 // set month
-                attr[2] = Integer.toString(decodedMonthDay[0]);
-
+                if(selected == "Month"){
+                    attr[2] = Integer.toString(Integer.parseInt(dt[1]));
+                }
                 // set day
-                attr[3] = Integer.toString(decodedMonthDay[1]);
+                if(selected == "Day") {
+                      attr[2] = Integer.toString(Integer.parseInt(dt[1]));
+                      attr[3] = Integer.toString(Integer.parseInt(dt[2]));
+                }
                 // set pm25, either by getting an existing value or leaving it blank to indicate no data
                 attr[6] = locObj.getDayValueDictionary().containsKey(i) ? Double.toString(locObj.getDay(i)) : "0.0";
 
@@ -351,27 +293,78 @@ public class MainController implements Initializable {
         return metricsss;
     }
 
+    /* inserts default month and day when time domains are year and month */
+    public static String[] insertX(int n, String[] arr, int x, int pos)
+    {
+        int i;
+
+        // create a new array of size n+1
+        String newarr[] = new String[n + 1];
+
+        // insert the elements from
+        // the old array into the new array
+        // insert all elements till pos
+        // then insert x at pos
+        // then insert rest of the elements
+        for (i = 0; i < n + 1; i++) {
+            if (i < pos - 1)
+                newarr[i] = arr[i];
+            else if (i == pos - 1)
+                newarr[i] = String.valueOf(x);
+            else
+                newarr[i] = arr[i - 1];
+        }
+        return newarr;
+    }
     /* This method reads in the data for the locations already given and stores them into locationDataGiven.
     * This method does not interact with the GUI at all
     */
-    private void readDataGivenLocations(String fileName) {
+    private void readDataGivenLocations(String fileName, String timeDomain) {
         Path pathToFile = Paths.get(fileName);
 
         // Reads file
-        try (BufferedReader br = Files.newBufferedReader(pathToFile)) {
-                String line = br.readLine();
-            l   ine = br.readLine();// skip column names
-            
+
+        try (BufferedReader br = Files.newBufferedReader(pathToFile, StandardCharsets.US_ASCII)) {
+            String line = br.readLine();
+            line = br.readLine();// skip column names
+
+            LinkedList<Integer> yearArray = new LinkedList<>();
+
+
             // Continues reading until no more lines exist
             while (line != null) {
+               //System.out.println(line);
+
                 // Splits line based on regex
                 String[] attributes = line.split("\\s+");
+                switch (timeDomain) {
+                    case "Year":
+                        // this is for text files that only include only year, so we don't have reorder array indexes, insert default month and days
+                        if(attributes.length < 6){
+                            attributes = insertX(5, attributes, 0, 3);
+                            attributes = insertX(6, attributes, 0, 4);
+                        }
+                        break;
+                    case "Month":
+                        // this is for text files that only include year and month, so we don't have reorder array indexes
+                       if(attributes.length < 7){
+
+                           attributes = insertX(6, attributes, 0, 4);
+                       }
+                        //System.out.println(Arrays.toString(attributes));
+
+                        break;
+                }
 
                 // Variables retrieved
-                // TODO: Needs to handle year eventually
                 int id = Integer.parseInt(attributes[0]);
-                int month = Integer.parseInt(attributes[2]);
+                // always going to be a year
+                int year = Integer.parseInt(attributes[1]);
+                yearArray.add(year);
+
+                //initialize default
                 int day = Integer.parseInt(attributes[3]);
+                int month = Integer.parseInt(attributes[2]);
                 double x = Double.parseDouble(attributes[4]);
                 double y = Double.parseDouble(attributes[5]);
                 double pm25 = Double.parseDouble(attributes[6]);
@@ -384,14 +377,29 @@ public class MainController implements Initializable {
                     locationDataGiven.put(key, newLoc);
                 }
 
-                // Converts month and day to just day
+                // Converts month and day to just day ( count of the year)
                 int newDay = transcribeMonthDay(day, month);
+               // System.out.println("newday");
+              //  System.out.println(newDay);
 
                 // Adds new data point to location object
                 locationDataGiven.get(key).setDay(newDay, pm25);
 
                 line = br.readLine();
             }
+
+            for (String key : locationDataGiven.keySet()) {
+              // System.out.println("Key = " + key);
+            }
+
+            for (Location value : locationDataGiven.values()) {
+              //  System.out.println("Value = " + value);
+            }
+
+            startYear = Collections.min(yearArray);
+            endYear   = Collections.max(yearArray);
+            //System.out.println("Minimum: " + Collections.min(yearArray));
+            //System.out.println("Maximum: " + Collections.max(yearArray));
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -429,37 +437,29 @@ public class MainController implements Initializable {
         return new int[]{-1, -1};
     }
 
-    public static List<Date> getDaysBetweenDates(Date startDate, Date endDate){
-        ArrayList<Date> dates = new ArrayList<Date>();
-        Calendar cal1 = Calendar.getInstance();
-        cal1.setTime(startDate);
 
-        Calendar cal2 = Calendar.getInstance();
-        cal2.setTime(endDate);
-
-        while(cal1.before(cal2) || cal1.equals(cal2))
-        {
-            dates.add(cal1.getTime());
-            cal1.add(Calendar.DATE, 1);
-        }
-        return dates;
-    }
     /*This creates a flat string array, organizes data, so it cant be neatly print to gui and output file */
 
     private MasterTable createPrettyData(String[] metadata) {
 
         int id = Integer.parseInt(metadata[0]);
-        int year = Integer.parseInt(metadata[1]); // get year somehow
-        int month = Integer.parseInt(metadata[2]);
-        int day = Integer.parseInt(metadata[3]);
+        int year = Integer.parseInt( metadata[1]); // get year somehow
+        int month = 0;
+        int day = 0;
         Double x = Double.parseDouble(metadata[4]);
         Double y = Double.parseDouble(metadata[5]);
         Double pms = Double.parseDouble(metadata[6]);
 
-        /* for when I figure out how to do the time domain stuff
+        /* for when I figure out how to do the time domain stuff*/
         switch (selected.toString()) {
             case "Day":
-        }*/
+                day = Integer.parseInt(metadata[3]);
+                month = Integer.parseInt(metadata[2]);
+                break;
+            case "Month":
+                month = Integer.parseInt(metadata[2]);
+                break;
+        }
 
 
         // System.out.println("id " + id + "year " + " month " + month + " day " + day + " x " + x + " y " + y + " pm25 " + pms);
@@ -520,11 +520,12 @@ public class MainController implements Initializable {
         filepathInterpolateData = DialogModel.getInstance().getfilepathInitialData().getText();
         selected = (String) DialogModel.getInstance().gettimeDomain().getValue();
 
+        // This sets the locationDataGiven HashMap
+        readDataGivenLocations(filepathInitialData, selected.toString());
+
         // This sets the data that needs to be interpolated both for the GUI and the locationsToSolve HashMap
         locationDataSetImport(filepathInterpolateData);
 
-        // This sets the locationDataGiven HashMap
-        readDataGivenLocations(filepathInitialData);
     }
 
     @FXML

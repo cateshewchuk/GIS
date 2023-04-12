@@ -30,15 +30,12 @@ public class DialogController implements Initializable {
     private Stage parentStage;
     @FXML
     private TextField InitialFilePath;
-
     @FXML
     private TextField interpolateDataFilePath;
-
     @FXML
     public ComboBox timeDomain;
     public String filepathInitialData;
     public String filepathInterpolateData = "";
-
 
     ObservableList<String> timeDomainList = FXCollections.observableArrayList("Day", "Month", "Year");
 
@@ -81,7 +78,6 @@ public class DialogController implements Initializable {
         );
         File file = fileChooser.showOpenDialog(stage);
         String path = file.getPath();
-
 
         return path;
     }
