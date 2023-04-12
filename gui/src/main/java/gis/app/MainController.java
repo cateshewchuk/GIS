@@ -323,11 +323,13 @@ public class MainController implements Initializable {
         Path pathToFile = Paths.get(fileName);
 
         // Reads file
+
         try (BufferedReader br = Files.newBufferedReader(pathToFile, StandardCharsets.US_ASCII)) {
             String line = br.readLine();
             line = br.readLine();// skip column names
 
             LinkedList<Integer> yearArray = new LinkedList<>();
+
 
             // Continues reading until no more lines exist
             while (line != null) {

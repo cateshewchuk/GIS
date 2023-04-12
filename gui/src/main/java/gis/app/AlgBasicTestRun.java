@@ -1,8 +1,6 @@
 package gis.app;
-import java.io.FileNotFoundException;
-import java.util.*;
-import java.io.File;
-public class Algorithm {
+
+public class AlgBasicTestRun {
     //Scratch work for Interpolation Algorithm
     /* Input:
      * A - matrix representing known data in the form [t x y w],
