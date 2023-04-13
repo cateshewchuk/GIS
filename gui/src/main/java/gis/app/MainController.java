@@ -1,6 +1,7 @@
 package gis.app;
 
 import gis.model.Location;
+import gis.validation.CrossValidation;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -500,6 +501,8 @@ public class MainController implements Initializable {
         // if(file.exists()) desktop.open(file);
     }
 
+
+    // Extremely important method, drives everything for File reading and output file generation
     @FXML
     private void handleButtonAction(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Dialog.fxml"));
@@ -537,5 +540,8 @@ public class MainController implements Initializable {
         browseFile();
     }
 
+    public static HashMap<String, Location> getLocationsToSolve() {
+        return locationsToSolve;
+    }
 
 }

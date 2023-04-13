@@ -1,8 +1,5 @@
 package gis.Algorithm;
 
-import gis.*;
-import java.util.*;
-
 /* If you know the pm25 values at a certain location at two separate times, you
     can use the following formula to approximate the pm25 value at an unknown time
     using the following 1D time shape function:
