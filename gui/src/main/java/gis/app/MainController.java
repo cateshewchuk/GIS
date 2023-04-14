@@ -525,8 +525,10 @@ public class MainController implements Initializable {
         // This sets the data that needs to be interpolated both for the GUI and the locationsToSolve HashMap
         locationDataSetImport(filepathInterpolateData);
 
-        // This runs cross validation. Results are outputted to a file named "loocv_sf.txt"
-        new CrossValidation(locationDataGiven).loocv();
+        // This creates a new CrossValidation object, which will create the cross validation txt file and store cross
+        // validation metrics.
+        CrossValidation cv = new CrossValidation(locationDataGiven);
+        cv.loocv();
     }
 
     @FXML
