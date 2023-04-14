@@ -36,6 +36,7 @@ public class TimeInterpolation {
                         if(unknownData.get(pointKey).getDayValueDictionary().get(k) != 0) {
                             t1 = unknownData.get(pointKey).getDay(k);
                             wi1 = unknownData.get(pointKey).getDayValueDictionary().get(k);
+                            break;
                         }
                         else
                             continue;
@@ -44,6 +45,7 @@ public class TimeInterpolation {
                         if(unknownData.get(pointKey).getDayValueDictionary().get(r) != 0) {
                             wi2 = unknownData.get(pointKey).getDayValueDictionary().get(r);
                             t2 = unknownData.get(pointKey).getDay(r);
+                            break;
                         }
                         else
                             continue;
