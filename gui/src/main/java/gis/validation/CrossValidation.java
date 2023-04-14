@@ -12,7 +12,7 @@ public class CrossValidation {
     private HashMap<String, Location> locationsToValidate;
 
     public CrossValidation(HashMap<String, Location> locationsToValidate) {
-        // Fairly messy, refactor if given time
+        // This is probably not ideal
         this.locationsToValidate = locationsToValidate;
     }
 
@@ -36,21 +36,35 @@ public class CrossValidation {
                 validateDays(loc, writer);
             }
 
+            writer.close();
         } catch (IOException e) {
             System.out.println(e);
-            System.out.println("Something went wrong with file access in cross validation");
+            System.out.println("Something went wrong with file access in cross validation.");
         }
     }
 
+    // For each location object, this method validates every day
     public void validateDays(Location loc, BufferedWriter writer) throws IOException {
         HashMap<Integer, Double> dayDict = loc.getDayValueDictionary();
 
+        // Creates a copy of the HashMap
+        HashMap<String, Location> hashCopy = new HashMap<>(locationsToValidate);
+
+        // Removes the location being worked with
+        hashCopy.remove(loc.getX() + ", " + loc.getY());
+
         for (Integer day : dayDict.keySet()) {
-            solveForSingleDay(day, dayDict);
+            // Calculates the result by pretending it doesn't exist
+            // TODO: Call method in Algorithm package that when given a HashMap of locations and day, calculate
+            //  for that location and day. Method does not exist yet.
+
+            // Method to do above here
+
+            // Writes retrieved answer to file. Dummy placeholder of 0 is used, will be replaced when above method is completed.
+            writer.write(dayDict.get(day) + ", 0");
+            writer.newLine();
         }
     }
 
-    public void solveForSingleDay(int day, HashMap<Integer, Double> dayDict) {
 
-    }
 }
