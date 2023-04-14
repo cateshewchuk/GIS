@@ -40,3 +40,7 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Project Output ###
+loocv_sf.txt
+error_statistics_sf.txt
