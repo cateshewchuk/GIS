@@ -52,6 +52,17 @@ public class TimeInterpolation {
                     unknownData.get(pointKey).setDay(j, wi);
                 }
             }
+
+
+            /* Come back to this because I don't feel like this is the right move
+            if(unknownData.get(pointKey).getDayValueDictionary().get(1) == 0)
+                unknownData.get(pointKey).setDay(1, unknownData.get(pointKey).getDayValueDictionary().get(2));
+
+            if(unknownData.get(pointKey).getDayValueDictionary().get(365) == 0)
+                unknownData.get(pointKey).setDay(365, unknownData.get(pointKey).getDayValueDictionary().get(364));
+
+
+             */
         }
     }
 }
