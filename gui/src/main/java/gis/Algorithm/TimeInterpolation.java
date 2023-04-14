@@ -23,34 +23,27 @@ public class TimeInterpolation {
 
         List<Vector2D> coordinates = ConvertData.coordinatesToVector(unknownData);
 
-        for(int i = 0; i < coordinates.size(); i++) {
-            Vector2D point = coordinates.get(i);
+        for (Vector2D point : coordinates) {
             String pointKey = point.x + ", " + point.y;
 
-            for(int j = 2; j <= 364; j++) {
+            for (int j = 2; j <= 364; j++) {
                 t = j;
-                if(unknownData.get(pointKey).getDayValueDictionary().get(j) != 0)
-                    continue;
-                else {
-                    for(int k = j - 1; k > 0; k--) {
-                        if(unknownData.get(pointKey).getDayValueDictionary().get(k) != 0) {
+                if (unknownData.get(pointKey).getDayValueDictionary().get(j) == 0) {
+                    for (int k = j - 1; k > 0; k--) {
+                        if (unknownData.get(pointKey).getDayValueDictionary().get(k) != 0) {
                             t1 = unknownData.get(pointKey).getDay(k);
                             wi1 = unknownData.get(pointKey).getDayValueDictionary().get(k);
                             break;
                         }
-                        else
-                            continue;
                     }
-                    for(int r = j + 1; j <= 365; j++) {
-                        if(unknownData.get(pointKey).getDayValueDictionary().get(r) != 0) {
+                    for (int r = j + 1; j <= 365; j++) {
+                        if (unknownData.get(pointKey).getDayValueDictionary().get(r) != 0) {
                             wi2 = unknownData.get(pointKey).getDayValueDictionary().get(r);
                             t2 = unknownData.get(pointKey).getDay(r);
                             break;
                         }
-                        else
-                            continue;
                     }
-                    wi =  ((t2 - t) / (t2 - t1)) * wi1 + ((t - t1) / (t2 - t1)) * wi2;
+                    wi = ((t2 - t) / (t2 - t1)) * wi1 + ((t - t1) / (t2 - t1)) * wi2;
                     unknownData.get(pointKey).setDay(j, wi);
                 }
             }
