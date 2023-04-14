@@ -1,11 +1,11 @@
 package gis.Algorithm;
 
 import gis.model.*;
-import gis.app.*;
 import java.util.*;
 import gis.triangulation.*;
 
 public class ConvertData {
+    /*
     public static double[][] convertToA(HashMap<String, Location> dataKnown) {
         double[][] matrixA = new double[dataKnown.size()][4];
         int row = 0;
@@ -59,12 +59,13 @@ public class ConvertData {
 
         return time;
     }
+    */
 
-    public static List<Vector2D> knownXY(double[][] A) {
+    public static List<Vector2D> coordinatesToVector(HashMap<String, Location> data) {
         List<Vector2D> knownCoordinates = new ArrayList<Vector2D>();
 
-        for(int i = 0; i < A.length; i++) {
-            Vector2D vector = new Vector2D(A[i][1], A[i][2]);
+        for(Map.Entry<String, Location> entry: data.entrySet()) {
+            Vector2D vector = new Vector2D(entry.getValue().getX(), entry.getValue().getY());
             if(knownCoordinates.contains(vector))
                 break;
             else
@@ -74,6 +75,7 @@ public class ConvertData {
         return knownCoordinates;
     }
 
+    /*
     public double[][] convertToResult(double[][] matrix, double query) {
         double[][] res = new double[matrix.length][4];
 
@@ -86,4 +88,6 @@ public class ConvertData {
 
         return res;
     }
+
+     */
 }

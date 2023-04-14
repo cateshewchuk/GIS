@@ -1,7 +1,6 @@
 package gis.Algorithm;
 import gis.model.*;
 import java.util.*;
-import gis.app.*;
 import gis.triangulation.*;
 
 /*  Computing the values of unknown data using triangulation and the
@@ -9,29 +8,42 @@ import gis.triangulation.*;
 
  */
 public class SpatioInterpolation {
-    public double[][] queryValues(HashMap<String, Location> knownData, HashMap<String, Location> unknownData) throws NotEnoughPointsException {
-        double[][] A = ConvertData.convertToA(knownData);
-        double[][] B = ConvertData.convertToB(unknownData);
-        double[][] res = new double[B.length][4];
+    public void queryValues(HashMap<String, Location> knownData, HashMap<String, Location> unknownData) throws NotEnoughPointsException {
+        List<Vector2D> knownCoordinates = ConvertData.coordinatesToVector(knownData);
+        List<Vector2D> unknownCoordinates = ConvertData.coordinatesToVector(unknownData);
 
-        //Copy parts of B into res
-        for(int i = 0; i < B.length; i++) {
-            res[i][0] = B[i][0];
-            res[i][1] = B[i][1];
-            res[i][2] = B[i][2];
-        }
-        List<Vector2D> knownCoordinates = ConvertData.knownXY(A);
-        List<Vector2D> unknownCoordinates = ConvertData.knownXY(B);
+        Iterator<Map.Entry<String, Location>> it = unknownData.entrySet().iterator();
 
-        double N1;
-        double N2;
-        double N3;
+        double N1, N2, N3, w1, w2, w3, w;
 
         for(int i = 0; i < unknownCoordinates.size(); i++) {
-            Triangle2D container = Triangulation.del(knownCoordinates, unknownCoordinates.get(i));
+            Vector2D point = unknownCoordinates.get(i);
 
+            String pointKey = point.x + ", " + point.y;
+
+            Triangle2D outer = Triangulation.del(knownCoordinates, point);
+
+            String outerKey1 = outer.a.x + ", " + outer.a.y;
+            String outerKey2 = outer.b.x + ", " + outer.b.y;
+            String outerKey3 = outer.c.x + ", " + outer.c.y;
+
+            double outerArea = Triangulation.outerArea(outer);
+            N1 = Triangulation.calcN1(outer, point);
+            N2 = Triangulation.calcN2(outer, point);
+            N3 = Triangulation.calcN3(outer, point);
+
+            for(int j = 1; j <= 365; j++) {
+                w1 = knownData.get(outerKey1).getDayValueDictionary().get(j);
+                w2 = knownData.get(outerKey2).getDayValueDictionary().get(j);
+                w3 = knownData.get(outerKey3).getDayValueDictionary().get(j);
+
+                if(w1 == 0 || w2 == 0 || w3 == 0)
+                    continue;
+                else {
+                    w = N1 * w1 + N2 * w2 + N3 * w3;
+                    unknownData.get(pointKey).setDay(j, w);
+                }
+            }
         }
-
-        return res;
     }
 }
