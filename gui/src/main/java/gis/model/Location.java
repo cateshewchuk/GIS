@@ -87,4 +87,8 @@ public class Location {
 return str;
         //System.out.println();
     }
+
+    public String toString() {
+        return "-----------\nID: " + getID() + "\nX: " + getX() + "\nY: " + getY() + "\nDay Value Dict: " + getDayValueDictionary() + "\n";
+    }
 }

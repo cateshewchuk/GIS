@@ -12,6 +12,10 @@ public class SpatioInterpolation {
         List<Vector2D> knownCoordinates = ConvertData.coordinatesToVector(knownData);
         List<Vector2D> unknownCoordinates = ConvertData.coordinatesToVector(unknownData);
 
+        for(Vector2D vector: knownCoordinates) {
+            System.out.print("[" + vector.x + ", " + vector.y + "] ");
+        }
+
         ConvertData.nullToValue(knownData);
         ConvertData.nullToValue(unknownData);
 
@@ -20,27 +24,30 @@ public class SpatioInterpolation {
         for (Vector2D point : unknownCoordinates) {
             String pointKey = point.x + ", " + point.y;
 
-            Triangle2D outer = Triangulation.del(knownCoordinates, point);
-            if(outer != null) {
-                String outerKey1 = outer.a.x + ", " + outer.a.y;
-                String outerKey2 = outer.b.x + ", " + outer.b.y;
-                String outerKey3 = outer.c.x + ", " + outer.c.y;
+            List<Triangle2D> tris = Triangulation.del(knownCoordinates, point);
+            for(Triangle2D tri: tris) {
+                if(Triangulation.isInTriangle(tri, point)) {
+                    String outerKey1 = tri.a.x + ", " + tri.a.y;
+                    String outerKey2 = tri.b.x + ", " + tri.b.y;
+                    String outerKey3 = tri.c.x + ", " + tri.c.y;
 
-                N1 = Triangulation.calcN1(outer, point);
-                N2 = Triangulation.calcN2(outer, point);
-                N3 = Triangulation.calcN3(outer, point);
+                    N1 = Triangulation.calcN1(tri, point);
+                    N2 = Triangulation.calcN2(tri, point);
+                    N3 = Triangulation.calcN3(tri, point);
 
-                for (int j = 1; j <= 365; j++) {
-                    w1 = knownData.get(outerKey1).getDayValueDictionary().get(j);
-                    w2 = knownData.get(outerKey2).getDayValueDictionary().get(j);
-                    w3 = knownData.get(outerKey3).getDayValueDictionary().get(j);
+                    for (int j = 1; j <= 365; j++) {
+                        w1 = knownData.get(outerKey1).getDayValueDictionary().get(j);
+                        w2 = knownData.get(outerKey2).getDayValueDictionary().get(j);
+                        w3 = knownData.get(outerKey3).getDayValueDictionary().get(j);
 
 
-                    if (w1 != -1 && w2 != -1 && w3 != -1) {
-                        w = N1 * w1 + N2 * w2 + N3 * w3;
-                        unknownData.get(pointKey).setDay(j, w);
+                        if (w1 != -1 && w2 != -1 && w3 != -1) {
+                            w = N1 * w1 + N2 * w2 + N3 * w3;
+                            unknownData.get(pointKey).setDay(j, w);
+                        }
                     }
                 }
+                break;
             }
         }
     }

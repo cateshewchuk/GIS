@@ -1,6 +1,8 @@
 package gis.app;
 
+import gis.Algorithm.Interpolation;
 import gis.model.Location;
+import gis.triangulation.NotEnoughPointsException;
 import gis.validation.CrossValidation;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -81,8 +83,6 @@ public class MainController implements Initializable {
     Day/Measurement = [{1=0.0, 2=0.0, 3=0.0, 4=0.0, 5=0.0, 6=0.0, 7=0.0, 8=0.0, 9=0.0, 10=0.0, 11=0.0, 12=0.0, 13=0.0, 14=0.0, 15=0.0, 16=0.0, 17=0.0, 18=0.0, 19=0.0, 20=0.0, 21=0.0, 22=0.0, 23=0.0, 24=0.0, 25=0.0, 26=0.0, 27=0.0, 28=0.0, 29=0.0, 30=0.0, 31=0.0}] }]*/
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-
         importBtn.fireEvent(new ActionEvent());
     }
 
@@ -101,6 +101,23 @@ public class MainController implements Initializable {
     private void locationDataSetImport(String filepathInterpolateData) {
         //List<MasterTable> iFile =
         createCols(filepathInterpolateData);
+
+        /*boolean success = false;
+        try {
+            Interpolation.runInterpolation(locationsToSolve, locationDataGiven );
+
+            for (Map.Entry<String, Location> entryA : locationDataGiven.entrySet()) {
+                //System.out.println(entryA);
+                System.out.print(Arrays.toString(new Map.Entry[]{entryA}));
+                Location locObj = entryA.getValue();
+                System.out.print(locObj);
+            }
+        } catch (NotEnoughPointsException e) {
+            throw new RuntimeException(e);
+        }
+        if (success) {
+            createCols(filepathInterpolateData);
+        }*/
     }
 
     private String browseFile() {
@@ -131,6 +148,8 @@ public class MainController implements Initializable {
         List<MasterTable> metric = readToSolveLocations(this.filepathInterpolateData);
         masterTable = FXCollections.observableArrayList(metric);
 
+
+
         id.setCellValueFactory(new PropertyValueFactory<>("tableID"));
         year.setCellValueFactory(new PropertyValueFactory<>("Year"));
 
@@ -149,7 +168,12 @@ public class MainController implements Initializable {
 
         //add your data to the table here.
         table.setItems(masterTable);
-        createFile();
+        //createFile();
+
+      //  if (success) {
+            createFile();
+        //}
+
     }
 
     /*THIS IS READING THE COUNTY.TXT FILE AND CREATING ALL THE ROWS AND COLUMNS AND SETTING UP THE LOCATION CLASS*/
@@ -160,8 +184,8 @@ public class MainController implements Initializable {
         int lineCount = 0;
 
         // loop through country.txt file
-        try (BufferedReader br = Files.newBufferedReader(pathToFile,
-                StandardCharsets.ISO_8859_1)) {
+        try (BufferedReader br = Files.newBufferedReader(pathToFile, StandardCharsets.UTF_16LE)) {
+           //  try (BufferedReader br = Files.newBufferedReader(pathToFile, StandardCharsets.ISO_8859_1)) {
 
             String line = br.readLine();
             while ((line = br.readLine()) != null) {
@@ -182,6 +206,7 @@ public class MainController implements Initializable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
 
         //make sure row length and hashmap length match, to verify all points are being imported
         //System.out.println(dataPoints.size());
@@ -292,6 +317,21 @@ public class MainController implements Initializable {
 
 
         sort(metricsss);
+
+       // boolean success = false;
+
+        try {
+            Interpolation.runInterpolation(locationsToSolve, locationDataGiven );
+            for (Map.Entry<String, Location> entryA : locationsToSolve.entrySet()) {
+                //System.out.println(entryA);
+                System.out.print(Arrays.toString(new Map.Entry[]{entryA}));
+                Location locObj = entryA.getValue();
+                System.out.print(locObj);
+            }
+
+        } catch (NotEnoughPointsException e) {
+            throw new RuntimeException(e);
+        }
         return metricsss;
     }
 
@@ -325,12 +365,12 @@ public class MainController implements Initializable {
         Path pathToFile = Paths.get(fileName);
 
         // Reads file
-        try (BufferedReader br = Files.newBufferedReader(pathToFile, StandardCharsets.ISO_8859_1)) {
+        //try (BufferedReader br = Files.newBufferedReader(pathToFile, StandardCharsets.US_ASCII)) {
+             try (BufferedReader br = Files.newBufferedReader(pathToFile, StandardCharsets.ISO_8859_1)) {
             String line = br.readLine();
             line = br.readLine();// skip column names
 
             LinkedList<Integer> yearArray = new LinkedList<>();
-
 
             // Continues reading until no more lines exist
             while (line != null) {
@@ -396,6 +436,7 @@ public class MainController implements Initializable {
             for (Location value : locationDataGiven.values()) {
               //  System.out.println("Value = " + value);
             }
+
 
             startYear = Collections.min(yearArray);
             endYear   = Collections.max(yearArray);
