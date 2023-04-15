@@ -36,7 +36,7 @@ public class Location {
      */
     private HashMap<Integer, Double> dayValueDictionary;
 
-    public Location (double x, double y, int ID) {
+    public Location(double x, double y, int ID) {
         this.x = x;
         this.y = y;
         this.ID = ID;
@@ -80,21 +80,16 @@ public class Location {
         this.ID = ID;
     }
 
-    public String showData(){
+    public String showData() {
 
         //visually show object
-       String str = "ID = "+ID+" x = "+x + "  " + " y = "+y + " "  + " \n" + "Day/Measurement = "+Arrays.asList(dayValueDictionary)+ " \n" ; // method 1
-return str;
+        String str = "ID = " + ID + " x = " + x + "  " + " y = " + y + " " + " \n" + "Day/Measurement = " + Arrays.asList(dayValueDictionary) + " \n"; // method 1
+        return str;
         //System.out.println();
     }
-<<<<<<< HEAD
 
     public String toString() {
         return "-----------\nID: " + getID() + "\nX: " + getX() + "\nY: " + getY() + "\nDay Value Dict: " + getDayValueDictionary() + "\n";
-=======
-    
-    public String toString() {
-        return "-----------\nID: " + getID() + "\nX: " + getX() + "\nY: " + getY() + "\nDay Value Dict: " + getDayValueDictionary();
->>>>>>> 3d8b2c44547b4c8b1b779b25b6dba4db322e0051
     }
+
 }

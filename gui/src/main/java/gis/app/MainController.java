@@ -101,23 +101,6 @@ public class MainController implements Initializable {
     private void locationDataSetImport(String filepathInterpolateData) {
         //List<MasterTable> iFile =
         createCols(filepathInterpolateData);
-
-        /*boolean success = false;
-        try {
-            Interpolation.runInterpolation(locationsToSolve, locationDataGiven );
-
-            for (Map.Entry<String, Location> entryA : locationDataGiven.entrySet()) {
-                //System.out.println(entryA);
-                System.out.print(Arrays.toString(new Map.Entry[]{entryA}));
-                Location locObj = entryA.getValue();
-                System.out.print(locObj);
-            }
-        } catch (NotEnoughPointsException e) {
-            throw new RuntimeException(e);
-        }
-        if (success) {
-            createCols(filepathInterpolateData);
-        }*/
     }
 
     private String browseFile() {
@@ -201,6 +184,11 @@ public class MainController implements Initializable {
                 lineCount++;
             }
 
+            try {
+                Interpolation.runInterpolation(locationsToSolve, locationDataGiven );
+            } catch (NotEnoughPointsException e) {
+                throw new RuntimeException(e);
+            }
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -317,21 +305,6 @@ public class MainController implements Initializable {
 
 
         sort(metricsss);
-
-       // boolean success = false;
-
-        try {
-            Interpolation.runInterpolation(locationsToSolve, locationDataGiven );
-            for (Map.Entry<String, Location> entryA : locationsToSolve.entrySet()) {
-                //System.out.println(entryA);
-                System.out.print(Arrays.toString(new Map.Entry[]{entryA}));
-                Location locObj = entryA.getValue();
-                System.out.print(locObj);
-            }
-
-        } catch (NotEnoughPointsException e) {
-            throw new RuntimeException(e);
-        }
         return metricsss;
     }
 
@@ -428,15 +401,6 @@ public class MainController implements Initializable {
 
                 line = br.readLine();
             }
-
-            for (String key : locationDataGiven.keySet()) {
-              // System.out.println("Key = " + key);
-            }
-
-            for (Location value : locationDataGiven.values()) {
-              //  System.out.println("Value = " + value);
-            }
-
 
             startYear = Collections.min(yearArray);
             endYear   = Collections.max(yearArray);
