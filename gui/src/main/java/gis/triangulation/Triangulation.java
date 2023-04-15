@@ -13,7 +13,7 @@ import java.util.*;
  */
 
 public class Triangulation {
-    public static Triangle2D del(List<Vector2D> pointsKnown, Vector2D pointUnknown) throws NotEnoughPointsException {
+    public static List<Triangle2D> del(List<Vector2D> pointsKnown, Vector2D pointUnknown) throws NotEnoughPointsException {
         //Triangulates the points that we know the data for
         DelaunayTriangulator dt = new DelaunayTriangulator(pointsKnown);
         dt.triangulate();
@@ -21,17 +21,22 @@ public class Triangulation {
         //Creates list of triangles created by the Delaunay Triangulation
         List<Triangle2D> triangles = dt.getTriangles();
 
+        return triangles;
+        /*
         //Contains all triangles formed
         TriangleSoup tris = new TriangleSoup();
         for(Triangle2D t : triangles) {
             tris.add(t);
         }
 
+
         //Returns the triangle with the three points that are
         //closest to the point we are trying to find the query data for
-        Triangle2D container = tris.findContainingTriangle(pointUnknown);
+        Triangle2D container = dt.findContainingTriangle(pointUnknown);
 
         return container;
+
+         */
         }
 
     public static double distance(double x1, double y1, double x2, double y2) {

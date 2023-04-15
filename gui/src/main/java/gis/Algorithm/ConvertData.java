@@ -75,10 +75,7 @@ public class ConvertData {
 
         for(Map.Entry<String, Location> entry: data.entrySet()) {
             Vector2D vector = new Vector2D(entry.getValue().getX(), entry.getValue().getY());
-            if(knownCoordinates.contains(vector))
-                continue;
-            else
-                knownCoordinates.add(vector);
+            knownCoordinates.add(vector);
         }
 
         return knownCoordinates;
