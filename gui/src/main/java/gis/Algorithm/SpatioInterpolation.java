@@ -12,6 +12,10 @@ public class SpatioInterpolation {
         List<Vector2D> knownCoordinates = ConvertData.coordinatesToVector(knownData);
         List<Vector2D> unknownCoordinates = ConvertData.coordinatesToVector(unknownData);
 
+        for(Vector2D vector: knownCoordinates) {
+            System.out.print("[" + vector.x + ", " + vector.y + "] ");
+        }
+        
         ConvertData.nullToValue(knownData);
         ConvertData.nullToValue(unknownData);
 
