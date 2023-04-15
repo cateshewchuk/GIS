@@ -14,6 +14,8 @@ import java.util.*;
  */
 public class TimeInterpolation {
     public static void timeInterpolate(HashMap<String, Location> unknownData) {
+        ConvertData.nullToValue(unknownData);
+
         double wi;
         double wi1 = 0;
         double wi2 = 0;
@@ -30,14 +32,14 @@ public class TimeInterpolation {
                 t = j;
                 if (unknownData.get(pointKey).getDayValueDictionary().get(j) == 0) {
                     for (int k = j - 1; k > 0; k--) {
-                        if (unknownData.get(pointKey).getDayValueDictionary().get(k) != 0) {
+                        if (unknownData.get(pointKey).getDayValueDictionary().get(k) != -1) {
                             t1 = unknownData.get(pointKey).getDay(k);
                             wi1 = unknownData.get(pointKey).getDayValueDictionary().get(k);
                             break;
                         }
                     }
                     for (int r = j + 1; j <= 365; j++) {
-                        if (unknownData.get(pointKey).getDayValueDictionary().get(r) != 0) {
+                        if (unknownData.get(pointKey).getDayValueDictionary().get(r) != -1) {
                             wi2 = unknownData.get(pointKey).getDayValueDictionary().get(r);
                             t2 = unknownData.get(pointKey).getDay(r);
                             break;
@@ -50,10 +52,10 @@ public class TimeInterpolation {
 
 
 
-            if(unknownData.get(pointKey).getDayValueDictionary().get(1) == 0)
+            if(unknownData.get(pointKey).getDayValueDictionary().get(1) == -1)
                 unknownData.get(pointKey).setDay(1, unknownData.get(pointKey).getDayValueDictionary().get(2));
 
-            if(unknownData.get(pointKey).getDayValueDictionary().get(365) == 0)
+            if(unknownData.get(pointKey).getDayValueDictionary().get(365) == -1)
                 unknownData.get(pointKey).setDay(365, unknownData.get(pointKey).getDayValueDictionary().get(364));
 
         }

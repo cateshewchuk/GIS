@@ -60,14 +60,23 @@ public class ConvertData {
         return time;
     }
     */
+    public static void nullToValue(HashMap<String, Location> data) {
+        List<Vector2D> coordinates = coordinatesToVector(data);
+        for(Vector2D vector: coordinates) {
+            String skey = vector.x + ", " + vector.y;
 
+            for (int i = 1; i <= 365; i++)
+                if (data.get(skey).getDayValueDictionary().get(i) == null)
+                    data.get(skey).setDay(i, -1);
+        }
+    }
     public static List<Vector2D> coordinatesToVector(HashMap<String, Location> data) {
         List<Vector2D> knownCoordinates = new ArrayList<Vector2D>();
 
         for(Map.Entry<String, Location> entry: data.entrySet()) {
             Vector2D vector = new Vector2D(entry.getValue().getX(), entry.getValue().getY());
             if(knownCoordinates.contains(vector))
-                break;
+                continue;
             else
                 knownCoordinates.add(vector);
         }
@@ -75,6 +84,7 @@ public class ConvertData {
         return knownCoordinates;
     }
 
+}
     /*
     public double[][] convertToResult(double[][] matrix, double query) {
         double[][] res = new double[matrix.length][4];
@@ -90,4 +100,4 @@ public class ConvertData {
     }
 
      */
-}
+

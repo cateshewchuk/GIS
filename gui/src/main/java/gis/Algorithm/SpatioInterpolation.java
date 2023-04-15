@@ -12,6 +12,9 @@ public class SpatioInterpolation {
         List<Vector2D> knownCoordinates = ConvertData.coordinatesToVector(knownData);
         List<Vector2D> unknownCoordinates = ConvertData.coordinatesToVector(unknownData);
 
+        ConvertData.nullToValue(knownData);
+        ConvertData.nullToValue(unknownData);
+
         double N1, N2, N3, w1, w2, w3, w;
 
         for (Vector2D point : unknownCoordinates) {
@@ -32,7 +35,8 @@ public class SpatioInterpolation {
                 w2 = knownData.get(outerKey2).getDayValueDictionary().get(j);
                 w3 = knownData.get(outerKey3).getDayValueDictionary().get(j);
 
-                if (w1 != 0 && w2 != 0 && w3 != 0) {
+
+                if (w1 != -1 && w2 != -1 && w3 != -1) {
                     w = N1 * w1 + N2 * w2 + N3 * w3;
                     unknownData.get(pointKey).setDay(j, w);
                 }
