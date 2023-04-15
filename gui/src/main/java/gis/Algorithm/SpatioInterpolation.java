@@ -21,24 +21,25 @@ public class SpatioInterpolation {
             String pointKey = point.x + ", " + point.y;
 
             Triangle2D outer = Triangulation.del(knownCoordinates, point);
+            if(outer != null) {
+                String outerKey1 = outer.a.x + ", " + outer.a.y;
+                String outerKey2 = outer.b.x + ", " + outer.b.y;
+                String outerKey3 = outer.c.x + ", " + outer.c.y;
 
-            String outerKey1 = outer.a.x + ", " + outer.a.y;
-            String outerKey2 = outer.b.x + ", " + outer.b.y;
-            String outerKey3 = outer.c.x + ", " + outer.c.y;
+                N1 = Triangulation.calcN1(outer, point);
+                N2 = Triangulation.calcN2(outer, point);
+                N3 = Triangulation.calcN3(outer, point);
 
-            N1 = Triangulation.calcN1(outer, point);
-            N2 = Triangulation.calcN2(outer, point);
-            N3 = Triangulation.calcN3(outer, point);
-
-            for (int j = 1; j <= 365; j++) {
-                w1 = knownData.get(outerKey1).getDayValueDictionary().get(j);
-                w2 = knownData.get(outerKey2).getDayValueDictionary().get(j);
-                w3 = knownData.get(outerKey3).getDayValueDictionary().get(j);
+                for (int j = 1; j <= 365; j++) {
+                    w1 = knownData.get(outerKey1).getDayValueDictionary().get(j);
+                    w2 = knownData.get(outerKey2).getDayValueDictionary().get(j);
+                    w3 = knownData.get(outerKey3).getDayValueDictionary().get(j);
 
 
-                if (w1 != -1 && w2 != -1 && w3 != -1) {
-                    w = N1 * w1 + N2 * w2 + N3 * w3;
-                    unknownData.get(pointKey).setDay(j, w);
+                    if (w1 != -1 && w2 != -1 && w3 != -1) {
+                        w = N1 * w1 + N2 * w2 + N3 * w3;
+                        unknownData.get(pointKey).setDay(j, w);
+                    }
                 }
             }
         }
