@@ -155,11 +155,14 @@ public class MainController implements Initializable {
     /*THIS IS READING THE COUNTY.TXT FILE AND CREATING ALL THE ROWS AND COLUMNS AND SETTING UP THE LOCATION CLASS*/
     private List<MasterTable> readToSolveLocations(String fileName) {
         List<MasterTable> metricsss = new ArrayList<>();
+        Path pathToFile = Paths.get(fileName);
 
         int lineCount = 0;
 
         // loop through country.txt file
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+        try (BufferedReader br = Files.newBufferedReader(pathToFile,
+                StandardCharsets.UTF_16LE)) {
+
             String line = br.readLine();
             while ((line = br.readLine()) != null) {
                 //System.out.println(line);
@@ -319,9 +322,10 @@ public class MainController implements Initializable {
     * This method does not interact with the GUI at all
     */
     private void readDataGivenLocations(String fileName, String timeDomain) {
+        Path pathToFile = Paths.get(fileName);
 
         // Reads file
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+        try (BufferedReader br = Files.newBufferedReader(pathToFile, StandardCharsets.US_ASCII)) {
             String line = br.readLine();
             line = br.readLine();// skip column names
 
