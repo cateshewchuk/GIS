@@ -161,7 +161,7 @@ public class MainController implements Initializable {
 
         // loop through country.txt file
         try (BufferedReader br = Files.newBufferedReader(pathToFile,
-                StandardCharsets.UTF_16LE)) {
+                StandardCharsets.ISO_8859_1)) {
 
             String line = br.readLine();
             while ((line = br.readLine()) != null) {
@@ -325,7 +325,7 @@ public class MainController implements Initializable {
         Path pathToFile = Paths.get(fileName);
 
         // Reads file
-        try (BufferedReader br = Files.newBufferedReader(pathToFile, StandardCharsets.US_ASCII)) {
+        try (BufferedReader br = Files.newBufferedReader(pathToFile, StandardCharsets.ISO_8859_1)) {
             String line = br.readLine();
             line = br.readLine();// skip column names
 
