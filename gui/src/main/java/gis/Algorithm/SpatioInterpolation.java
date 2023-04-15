@@ -24,10 +24,9 @@ public class SpatioInterpolation {
         for (Vector2D point : unknownCoordinates) {
             String pointKey = point.x + ", " + point.y;
 
-            List<Triangle2D> containers = Triangulation.del(knownCoordinates, point);
-
-            for(Triangle2D tri : containers) {
-                if(tri.a != null && tri.b != null && tri.c != null) {
+            List<Triangle2D> tris = Triangulation.del(knownCoordinates, point);
+            for(Triangle2D tri: tris) {
+                if(Triangulation.isInTriangle(tri, point)) {
                     String outerKey1 = tri.a.x + ", " + tri.a.y;
                     String outerKey2 = tri.b.x + ", " + tri.b.y;
                     String outerKey3 = tri.c.x + ", " + tri.c.y;
@@ -47,11 +46,9 @@ public class SpatioInterpolation {
                             unknownData.get(pointKey).setDay(j, w);
                         }
                     }
-
                 }
                 break;
             }
         }
     }
 }
-

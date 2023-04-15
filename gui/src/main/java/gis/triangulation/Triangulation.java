@@ -22,6 +22,7 @@ public class Triangulation {
         List<Triangle2D> triangles = dt.getTriangles();
 
         return triangles;
+
         /*
         //Contains all triangles formed
         TriangleSoup tris = new TriangleSoup();
@@ -32,9 +33,10 @@ public class Triangulation {
 
         //Returns the triangle with the three points that are
         //closest to the point we are trying to find the query data for
-        Triangle2D container = dt.findContainingTriangle(pointUnknown);
+        Triangle2D container = tris.findContainingTriangle(pointUnknown);
 
         return container;
+
 
          */
         }
@@ -63,6 +65,14 @@ public class Triangulation {
         return A3 / outerArea(tri);
     }
 
+    public static boolean isInTriangle(Triangle2D tri, Vector2D point) {
+        double A = outerArea(tri);
+        double A1 = 0.5 * Math.abs(point.x * (tri.b.y - tri.c.y) + tri.b.x * (tri.c.y - point.y) + tri.c.x * (point.y - tri.b.y));
+        double A2 = 0.5 * Math.abs(tri.a.x * (point.y - tri.c.y) + point.x * (tri.c.y - tri.a.y) + tri.c.x * (tri.a.y - point.y));
+        double A3 = Math.abs(0.5 * (tri.a.x * (tri.b.y - point.y) + tri.b.x * (point.y - tri.a.y) + point.x * (tri.a.y - tri.b.y)));
+
+        return (A == A1 + A2 + A3);
+    }
     public static double spatio(double w1, double w2, double w3, double N1, double N2, double N3) {
         return N1 * w1 + N2 * w2 + N3 * w3;
     }
