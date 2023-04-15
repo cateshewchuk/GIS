@@ -198,7 +198,7 @@ public class DelaunayTriangulator {
     }
 
     /**
-     * Returns the trianges of the gis.triangulation in form of a vector of 2D
+     * Returns the triangles of the gis.triangulation in form of a vector of 2D
      * triangles.
      *
      * @return Returns the triangles of the gis.triangulation.
