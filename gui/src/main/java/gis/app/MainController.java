@@ -183,12 +183,6 @@ public class MainController implements Initializable {
 
                 lineCount++;
             }
-
-            try {
-                Interpolation.runInterpolation(locationsToSolve, locationDataGiven );
-            } catch (NotEnoughPointsException e) {
-                throw new RuntimeException(e);
-            }
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -197,8 +191,17 @@ public class MainController implements Initializable {
 
 
         //make sure row length and hashmap length match, to verify all points are being imported
-        //System.out.println(dataPoints.size());
-        //System.out.println(lineCount);
+        System.out.println(locationsToSolve.size());
+        System.out.println(lineCount);
+
+        if(locationsToSolve.size() == lineCount){
+            try {
+                Interpolation.runInterpolation(locationsToSolve, locationDataGiven );
+            } catch (NotEnoughPointsException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         // get array of dates
         LocalDate ld = LocalDate.of(startYear, Month.JANUARY, 1);
         LocalDate endDate = LocalDate.of(endYear, Month.DECEMBER, 31);
@@ -297,11 +300,12 @@ public class MainController implements Initializable {
             }
 
         }
-
-
-               /* Another way to print it out
-               for(Location val : value.values()) {System.out.println(val.showData());}*/
-            //System.out.println("\n");
+        for (Map.Entry<String, Location> entryA : locationsToSolve.entrySet()) {
+            //System.out.println(entryA);
+           // System.out.print(Arrays.toString(new Map.Entry[]{entryA}));
+            Location locObj = entryA.getValue();
+            //System.out.print(locObj);
+        }
 
 
         sort(metricsss);
@@ -406,6 +410,10 @@ public class MainController implements Initializable {
             endYear   = Collections.max(yearArray);
             //System.out.println("Minimum: " + Collections.min(yearArray));
             //System.out.println("Maximum: " + Collections.max(yearArray));
+
+
+                 // This sets the data that needs to be interpolated both for the GUI and the locationsToSolve HashMap
+                 locationDataSetImport(filepathInterpolateData);
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -531,8 +539,6 @@ public class MainController implements Initializable {
         // This sets the locationDataGiven HashMap
         readDataGivenLocations(filepathInitialData, selected.toString());
 
-        // This sets the data that needs to be interpolated both for the GUI and the locationsToSolve HashMap
-        locationDataSetImport(filepathInterpolateData);
 
         // This creates a new CrossValidation object, which will create the cross validation txt file and store cross
         // validation metrics.
