@@ -13,7 +13,7 @@ import java.util.*;
 
  */
 public class TimeInterpolation {
-    public void timeInterpolate(HashMap<String, Location> unknownData) {
+    public static void timeInterpolate(HashMap<String, Location> unknownData) {
         double wi;
         double wi1 = 0;
         double wi2 = 0;

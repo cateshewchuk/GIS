@@ -8,7 +8,7 @@ import gis.triangulation.*;
 
  */
 public class SpatioInterpolation {
-    public void queryValues(HashMap<String, Location> knownData, HashMap<String, Location> unknownData) throws NotEnoughPointsException {
+    public static void queryValues(HashMap<String, Location> knownData, HashMap<String, Location> unknownData) throws NotEnoughPointsException {
         List<Vector2D> knownCoordinates = ConvertData.coordinatesToVector(knownData);
         List<Vector2D> unknownCoordinates = ConvertData.coordinatesToVector(unknownData);
 
