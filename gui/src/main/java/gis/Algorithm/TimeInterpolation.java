@@ -14,47 +14,53 @@ import java.util.*;
  */
 public class TimeInterpolation {
     public static void timeInterpolate(HashMap<String, Location> unknownData) {
-        Double wi;
-        Double wi1 = null;
-        Double wi2 = null;
-        double t;
-        double t1 = 0;
-        double t2 = 0;
+        double wi;
+        double wi1 = -1;
+        double wi2 = -1;
+        double t1 = 1;
+        double t2 = 1;
 
         List<Vector2D> coordinates = ConvertData.coordinatesToVector(unknownData);
 
         for (Vector2D point : coordinates) {
             String pointKey = point.x + ", " + point.y;
 
-            for (int j = 2; j <= 364; j++) {
-                t = j;
-                if (unknownData.get(pointKey).getDayValueDictionary().get(j) == null) {
-                    for (int k = j - 1; k > 0; k--) {
-                        if (unknownData.get(pointKey).getDayValueDictionary().get(k) != null) {
-                            t1 = unknownData.get(pointKey).getDay(k);
+            for (int j =1; j <= 364; j++) {
+
+                if (unknownData.get(pointKey).getDayValueDictionary().get(j) == -1) {
+                    for (int k = j - 1; k >= 0; k--) {
+                        if (unknownData.get(pointKey).getDayValueDictionary().get(k) != -1) {
+                            t1 = k;
                             wi1 = unknownData.get(pointKey).getDayValueDictionary().get(k);
                             break;
                         }
                     }
-                    for (int r = j + 1; j <= 365; j++) {
-                        if (unknownData.get(pointKey).getDayValueDictionary().get(r) != null) {
+                    for (int r = j + 1; r <= 365; r++) {
+                        if (unknownData.get(pointKey).getDayValueDictionary().get(r) != -1) {
                             wi2 = unknownData.get(pointKey).getDayValueDictionary().get(r);
-                            t2 = unknownData.get(pointKey).getDay(r);
+                            t2 = r;
                             break;
                         }
                     }
-                    wi = ((t2 - t) / (t2 - t1)) * wi1 + ((t - t1) / (t2 - t1)) * wi2;
-                    unknownData.get(pointKey).setDay(j, wi);
+
+                    if(wi1 != -1 && wi2 != -1) {
+                        wi = ((t2 - j) / (t2 - t1)) * wi1 + ((j - t1) / (t2 - t1)) * wi2;
+                        unknownData.get(pointKey).setDay(j, wi);
+                    }
                 }
             }
 
 
 
-            if(unknownData.get(pointKey).getDayValueDictionary().get(1) == null)
-                unknownData.get(pointKey).setDay(1, unknownData.get(pointKey).getDayValueDictionary().get(2));
+            if(unknownData.get(pointKey).getDayValueDictionary().get(0) == -1)
+                unknownData.get(pointKey).setDay(0, unknownData.get(pointKey).getDayValueDictionary().get(1));
 
-            if(unknownData.get(pointKey).getDayValueDictionary().get(365) == null)
-                unknownData.get(pointKey).setDay(365, unknownData.get(pointKey).getDayValueDictionary().get(364));
+            if(unknownData.get(pointKey).getDayValueDictionary().get(364) == -1)
+                unknownData.get(pointKey).setDay(364, unknownData.get(pointKey).getDayValueDictionary().get(363));
+
+
+
+
 
         }
     }

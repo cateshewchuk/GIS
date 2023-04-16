@@ -47,33 +47,39 @@ public class Triangulation {
 
     // Area of a triangle using Heron's formula (using three sides of triangle)
     public static double outerArea(Triangle2D tri) {
-        return 0.5 * Math.abs(tri.a.x * (tri.b.y - tri.c.y) + tri.b.x * (tri.c.y - tri.a.y) + tri.c.x * (tri.a.y - tri.b.y));
+        return Math.abs(tri.a.x * (tri.b.y - tri.c.y) + tri.b.x * (tri.c.y - tri.a.y) + tri.c.x * (tri.a.y - tri.b.y));
     }
     //
     public static double calcN1(Triangle2D tri, Vector2D point) {
-        double A1 = 0.5 * Math.abs(point.x * (tri.b.y - tri.c.y) + tri.b.x * (tri.c.y - point.y) + tri.c.x * (point.y - tri.b.y));
+        double A1 = Math.abs(point.x * (tri.b.y - tri.c.y) + tri.b.x * (tri.c.y - point.y) + tri.c.x * (point.y - tri.b.y));
         return A1 / outerArea(tri);
     }
 
     public static double calcN2(Triangle2D tri, Vector2D point) {
-        double A2 = 0.5 * Math.abs(tri.a.x * (point.y - tri.c.y) + point.x * (tri.c.y - tri.a.y) + tri.c.x * (tri.a.y - point.y));
+        double A2 = Math.abs(tri.a.x * (point.y - tri.c.y) + point.x * (tri.c.y - tri.a.y) + tri.c.x * (tri.a.y - point.y));
         return A2 / outerArea(tri);
     }
 
     public static double calcN3(Triangle2D tri, Vector2D point) {
-        double A3 = Math.abs(0.5 * (tri.a.x * (tri.b.y - point.y) + tri.b.x * (point.y - tri.a.y) + point.x * (tri.a.y - tri.b.y)));
+        double A3 = Math.abs(tri.a.x * (tri.b.y - point.y) + tri.b.x * (point.y - tri.a.y) + point.x * (tri.a.y - tri.b.y));
         return A3 / outerArea(tri);
     }
 
     public static boolean isInTriangle(Triangle2D tri, Vector2D point) {
         double A = outerArea(tri);
-        double A1 = 0.5 * Math.abs(point.x * (tri.b.y - tri.c.y) + tri.b.x * (tri.c.y - point.y) + tri.c.x * (point.y - tri.b.y));
-        double A2 = 0.5 * Math.abs(tri.a.x * (point.y - tri.c.y) + point.x * (tri.c.y - tri.a.y) + tri.c.x * (tri.a.y - point.y));
-        double A3 = Math.abs(0.5 * (tri.a.x * (tri.b.y - point.y) + tri.b.x * (point.y - tri.a.y) + point.x * (tri.a.y - tri.b.y)));
+        double A1 = Math.abs(point.x * (tri.b.y - tri.c.y) + tri.b.x * (tri.c.y - point.y) + tri.c.x * (point.y - tri.b.y));
+        double A2 = Math.abs(tri.a.x * (point.y - tri.c.y) + point.x * (tri.c.y - tri.a.y) + tri.c.x * (tri.a.y - point.y));
+        double A3 = Math.abs(tri.a.x * (tri.b.y - point.y) + tri.b.x * (point.y - tri.a.y) + point.x * (tri.a.y - tri.b.y));
 
         return (A == A1 + A2 + A3);
     }
-    public static double spatio(double w1, double w2, double w3, double N1, double N2, double N3) {
-        return N1 * w1 + N2 * w2 + N3 * w3;
+
+    public static Triangle2D closestTriangle(List<Triangle2D> soup, Vector2D point) {
+        TriangleSoup triSoup = new TriangleSoup();
+        for(Triangle2D triangle : soup) {
+            triSoup.add(triangle);
+        }
+
+        return triSoup.findContainingTriangle(point);
     }
 }

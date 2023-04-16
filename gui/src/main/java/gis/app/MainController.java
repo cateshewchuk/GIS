@@ -196,7 +196,7 @@ public class MainController implements Initializable {
 
         if(locationsToSolve.size() == lineCount){
             try {
-                Interpolation.runInterpolation(locationsToSolve, locationDataGiven );
+                Interpolation.runInterpolation(locationDataGiven, locationsToSolve);
             } catch (NotEnoughPointsException e) {
                 throw new RuntimeException(e);
             }
