@@ -166,7 +166,7 @@ public class MainController implements Initializable {
 
         int lineCount = 0;
 
-        // loop through country.txt file
+        // loop through county.txt file
         try (BufferedReader br = Files.newBufferedReader(pathToFile, StandardCharsets.UTF_16LE)) {
            //  try (BufferedReader br = Files.newBufferedReader(pathToFile, StandardCharsets.ISO_8859_1)) {
 

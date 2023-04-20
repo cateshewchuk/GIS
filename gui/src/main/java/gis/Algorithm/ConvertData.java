@@ -5,6 +5,7 @@ import java.util.*;
 import gis.triangulation.*;
 
 public class ConvertData {
+    // Converts the given data pm25 values from null to -1 for easier use in algorithms
     public static void nullToValue(HashMap<String, Location> data) {
         List<Vector2D> coordinates = coordinatesToVector(data);
         for(Vector2D vector: coordinates) {
@@ -16,6 +17,7 @@ public class ConvertData {
         }
     }
 
+    // Converts given (x, y) coordinates into the Vector2D format
     public static List<Vector2D> coordinatesToVector(HashMap<String, Location> data) {
         List<Vector2D> knownCoordinates = new ArrayList<Vector2D>();
 

@@ -23,57 +23,33 @@ public class Triangulation {
 
         return triangles;
 
-        /*
-        //Contains all triangles formed
-        TriangleSoup tris = new TriangleSoup();
-        for(Triangle2D t : triangles) {
-            tris.add(t);
-        }
-
-
-        //Returns the triangle with the three points that are
-        //closest to the point we are trying to find the query data for
-        Triangle2D container = tris.findContainingTriangle(pointUnknown);
-
-        return container;
-
-
-         */
     }
 
-    public static double distance(double x1, double y1, double x2, double y2) {
-        return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow(y2 - y1, 2));
-    }
-
-    // Area of a triangle using Heron's formula (using three sides of triangle)
+    // Area of a triangle using the three vertices
     public static double outerArea(Triangle2D tri) {
         return Math.abs(tri.a.x * (tri.b.y - tri.c.y) + tri.b.x * (tri.c.y - tri.a.y) + tri.c.x * (tri.a.y - tri.b.y));
     }
-    //
+
     public static double calcN1(Triangle2D tri, Vector2D point) {
+        // Area of the sub-triangle ww2w3
         double A1 = Math.abs(point.x * (tri.b.y - tri.c.y) + tri.b.x * (tri.c.y - point.y) + tri.c.x * (point.y - tri.b.y));
         return A1 / outerArea(tri);
     }
 
     public static double calcN2(Triangle2D tri, Vector2D point) {
+        // Area of the sub-triangle w1ww3
         double A2 = Math.abs(tri.a.x * (point.y - tri.c.y) + point.x * (tri.c.y - tri.a.y) + tri.c.x * (tri.a.y - point.y));
         return A2 / outerArea(tri);
     }
 
     public static double calcN3(Triangle2D tri, Vector2D point) {
+        // Area of the sub-triangle w1w2w
         double A3 = Math.abs(tri.a.x * (tri.b.y - point.y) + tri.b.x * (point.y - tri.a.y) + point.x * (tri.a.y - tri.b.y));
         return A3 / outerArea(tri);
     }
 
-    public static boolean isInTriangle(Triangle2D tri, Vector2D point) {
-        double A = outerArea(tri);
-        double A1 = Math.abs(point.x * (tri.b.y - tri.c.y) + tri.b.x * (tri.c.y - point.y) + tri.c.x * (point.y - tri.b.y));
-        double A2 = Math.abs(tri.a.x * (point.y - tri.c.y) + point.x * (tri.c.y - tri.a.y) + tri.c.x * (tri.a.y - point.y));
-        double A3 = Math.abs(tri.a.x * (tri.b.y - point.y) + tri.b.x * (point.y - tri.a.y) + point.x * (tri.a.y - tri.b.y));
-
-        return (A == A1 + A2 + A3);
-    }
-
+    // Method to search the triangles formed by the Delaunay Triangulation
+    // and find the closest triangle that contains the given point.
     public static Triangle2D closestTriangle(List<Triangle2D> soup, Vector2D point) {
         TriangleSoup triSoup = new TriangleSoup();
         for(Triangle2D triangle : soup) {
