@@ -50,7 +50,7 @@ public class MainController implements Initializable {
     public ComboBox<String> timeDomain;
     public String filepathInitialData = "";
     public String filepathInterpolateData = "";
-    private Object selected = "Day";
+    public static Object selected = "Day";
     private Integer startYear = 0;
     private Integer endYear = 0;
 
@@ -357,7 +357,7 @@ public class MainController implements Initializable {
                 String[] attributes = line.split("\\s+");
                 switch (timeDomain) {
                     case "Year":
-                        // this is for text files that only include only year, so we don't have reorder array indexes, insert default month and days
+                        // this is for text files that only include year, so we don't have reorder array indexes, insert default month and days
                         if(attributes.length < 6){
                             attributes = insertX(5, attributes, 0, 3);
                             attributes = insertX(6, attributes, 0, 4);
@@ -401,7 +401,10 @@ public class MainController implements Initializable {
               //  System.out.println(newDay);
 
                 // Adds new data point to location object
-                locationDataGiven.get(key).setDay(newDay, pm25);
+                if(selected == "Day" || selected == "Month")
+                    locationDataGiven.get(key).setDay(newDay, pm25);
+                else
+                    locationDataGiven.get(key).setDay(0, pm25);
 
                 line = br.readLine();
             }
@@ -457,7 +460,7 @@ public class MainController implements Initializable {
     private MasterTable createPrettyData(String[] metadata) {
 
         int id = Integer.parseInt(metadata[0]);
-        int year = Integer.parseInt( metadata[1]); // get year somehow
+        int year = Integer.parseInt(metadata[1]); // get year somehow
         int month = 0;
         int day = 0;
         Double x = Double.parseDouble(metadata[4]);
@@ -498,12 +501,14 @@ public class MainController implements Initializable {
 
         try (BufferedWriter bw = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(filename)))) {
-            String identifier1 = String.format("%-20s %-20s %-20s %-20s %-20s %-20s %-20s%n", "ID", "YEAR", "MONTH", "DAY", "X", "Y", "PM25");
+
+            String identifier1 = String.format("%-10s %-7s %-7s %-7s %-11s %-11s %-20s%n", "ID", "YEAR", "MONTH", "DAY", "X", "Y", "PM25");
             bw.write(identifier1);
 
             for (MasterTable student : students) {
-                bw.write(String.format("%-20s %-20s %-20s %-20s %-20s %-20s %-20s%n", student.getTableID(), student.getYear(), student.getMonth(), student.getDay(), student.getXcol(), student.getYcol(), student.getPms()));
+                bw.write(String.format("%-10s %-7s %-7s %-7s %-11s %-11s %-20s%n", student.getTableID(), student.getYear(), student.getMonth(), student.getDay(), student.getXcol(), student.getYcol(), student.getPms()));
             }
+
 
 
         }
