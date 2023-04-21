@@ -56,6 +56,11 @@ public class Location {
         return dayValueDictionary;
     }
 
+    // Only used for weird cross validation shenanigans
+    public void setDayValueDictionary(HashMap<Integer, Double> dayValueDictionary) {
+        this.dayValueDictionary = dayValueDictionary;
+    }
+
     public double getX() {
         return x;
     }

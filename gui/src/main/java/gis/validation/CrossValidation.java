@@ -1,5 +1,6 @@
 package gis.validation;
 
+import gis.Algorithm.Interpolation;
 import gis.model.Location;
 
 import java.io.BufferedWriter;
@@ -8,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class CrossValidation {
     private HashMap<String, Location> locationsToValidate;
@@ -49,36 +51,49 @@ public class CrossValidation {
             }
 
             writer.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println(e);
-            System.out.println("Something went wrong with file access in cross validation.");
+            System.out.println("Something went wrong horribly wrong in the cross validation.");
         }
     }
 
     // For each location object, this method validates every day
-    public void validateDays(Location loc, BufferedWriter writer) throws IOException {
+    public void validateDays(Location loc, BufferedWriter writer) throws Exception {
+        // Keeps copy of dayDict. This is ESSENTIAL, interpolation destroys this dict.
         HashMap<Integer, Double> dayDict = loc.getDayValueDictionary();
 
-        // Creates a copy of the HashMap
+        // Creates a shallow copy of the HashMap. Potentially problematic?
         HashMap<String, Location> hashCopy = new HashMap<>(locationsToValidate);
 
-        // Removes the location being worked with
+        // Removes the location being worked with in the copy
         hashCopy.remove(loc.getX() + ", " + loc.getY());
 
-        for (Integer day : dayDict.keySet()) {
-            // Calculates the result by pretending it doesn't exist
-            // TODO: Call method in Algorithm package that when given a HashMap of locations and day, calculate
-            //  for that location and day using spatiotemporal method. Method does not exist yet.
+        // Resets day value dict
+        loc.setDayValueDictionary(new HashMap<>());
 
-            // Method to do above here
+        /* Solves for all 365 days in excluded location. It does this by pretending the excluded location is the only
+        location in a newly created hashmap to solve, using the same exact algorithm. Only the days that exist in the
+        original are relevant, so this is slightly inefficient.
+         */
+        Interpolation.runInterpolation(hashCopy, loc);
 
-            // Writes retrieved answer to file. Dummy placeholder of 0 is used, will be replaced when above method is completed.
-            writer.write(dayDict.get(day) + ", 0");
+        // Iterate through every day that matters
+        for (Map.Entry entry: dayDict.entrySet()) {
+            // If data does not exist for the day, it can't be validated.
+            if ((double) entry.getValue() == -1) {
+                continue;
+            }
+
+            // Writes retrieved answer to file.
+            writer.write(dayDict.get(entry.getKey()) + ", " + loc.getDay((Integer) entry.getKey()));
             writer.newLine();
 
-            // Stores each row in list for CrossValidation object. 0 is once again used as placeholder
-            validationRows.add(new ValidationRow(dayDict.get(day), 0));
+            // Stores each row in list for CrossValidation object.
+            validationRows.add(new ValidationRow(dayDict.get(entry.getKey()), loc.getDay((Integer) entry.getKey())));
         }
+
+        // Resets day value dict to what it was before
+        loc.setDayValueDictionary(dayDict);
     }
 
     private void createLOOCVMetricsFile() {
@@ -113,7 +128,16 @@ public class CrossValidation {
         // Relative error sum
         double relativeErrorSum = 0;
 
+        // Size to divide by
+        int size = validationRows.size();
+
         for (ValidationRow row : validationRows) {
+            // Checks if data is malformed. If so, ignore it.
+            if (row.getEstimated() == -1 || Double.isNaN(row.getEstimated())) {
+                size--;
+                continue;
+            }
+
             // Calculates error
             double error = Math.abs(row.getEstimated() - row.getActual());
 
@@ -124,16 +148,16 @@ public class CrossValidation {
         }
 
         // Mean Absolute Error
-        double MAE = errorSum / validationRows.size();
+        double MAE = errorSum / size;
 
         // Mean Squared Error
-        double MSE = squaredErrorSum / validationRows.size();
+        double MSE = squaredErrorSum / size;
 
         // Root Mean Squared Error
         double RMSE = Math.sqrt(MSE);
 
         // Mean Absolute Relative Error
-        double MARE = relativeErrorSum / validationRows.size();
+        double MARE = relativeErrorSum / size;
 
         //Write errors to file
         writer.write("MAE: " + MAE);

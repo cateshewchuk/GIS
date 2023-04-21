@@ -42,4 +42,12 @@ public class ConvertData {
         return knownCoordinates;
     }
 
+    // Method to handle single location and vector
+    public static Vector2D coordinatesToVector(Location loc) {
+        HashMap<String, Location> locHashMap = new HashMap<>();
+        locHashMap.put(loc.getX() + ", " + loc.getY(), loc);
+        // Really hacky
+        return coordinatesToVector(locHashMap).toArray(new Vector2D[1])[0];
+    }
+
 }

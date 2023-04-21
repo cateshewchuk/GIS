@@ -11,4 +11,11 @@ public class Interpolation {
         SpatioInterpolation.spaceFunction(knownData, unknownData);
         TimeInterpolation.timeInterpolate(unknownData);
     }
+
+    // Helper method for validation interpolation. See CrossValidation.java for details.
+    public static void runInterpolation(HashMap<String, Location> knownData, Location locationToSolve) throws NotEnoughPointsException {
+        HashMap<String, Location> locHashMap= new HashMap<>();
+        locHashMap.put(locationToSolve.getX() + ", " + locationToSolve.getY(), locationToSolve);
+        runInterpolation(knownData, locHashMap);
+    }
 }
