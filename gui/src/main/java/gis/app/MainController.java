@@ -1,8 +1,10 @@
 package gis.app;
 
+import gis.Algorithm.ConvertData;
 import gis.Algorithm.Interpolation;
 import gis.model.Location;
 import gis.triangulation.NotEnoughPointsException;
+import gis.triangulation.Vector2D;
 import gis.validation.CrossValidation;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

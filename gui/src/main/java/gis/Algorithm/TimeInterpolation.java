@@ -1,29 +1,23 @@
 package gis.Algorithm;
-import gis.app.Main;
+
 import gis.app.MainController;
-import gis.triangulation.*;
-import gis.model.*;
+import gis.model.Location;
+import gis.triangulation.Vector2D;
 
+import java.util.HashMap;
+import java.util.List;
 
-
-import java.util.*;
-
-/* If you know the pm25 values at a certain location at two separate times, you
-    can use the following formula to approximate the pm25 value at an unknown time
-    using the following 1D time shape function:
-        wi(t) = ((t2 - t)/(t2 - t1))wi1 + ((t-t1)/(t2-t1))wi2
-
- */
 public class TimeInterpolation {
-    public static void timeInterpolate(HashMap<String, Location> unknownData) {
+    public static void timeInterpolate(HashMap<String, Location> knownData) {
         // Variables used for time shape function shown in comments above
         double wi;
         double wi1 = -1;
         double wi2 = -1;
-        double t1 = 1;
-        double t2 = 1;
+        double t1 = -1;
+        double t2 = -1;
 
-        List<Vector2D> coordinates = ConvertData.coordinatesToVector(unknownData);
+        List<Vector2D> coordinates = ConvertData.coordinatesToVector(knownData);
+        ConvertData.nullToValue(knownData);
 
         for (Vector2D point : coordinates) {
             // To be in the format for the HashMaps being used
@@ -36,38 +30,37 @@ public class TimeInterpolation {
              */
             if(MainController.selected == "Day") {
                 for (int j = 1; j <= 364; j++) {
-
-                    if (unknownData.get(pointKey).getDayValueDictionary().get(j) == -1) {
+                    if (knownData.get(pointKey).getDayValueDictionary().get(j) == -1) {
                         for (int k = j - 1; k >= 0; k--) {
-                            if (unknownData.get(pointKey).getDayValueDictionary().get(k) != -1) {
+                            if (knownData.get(pointKey).getDayValueDictionary().get(k) != -1) {
                                 t1 = k;
-                                wi1 = unknownData.get(pointKey).getDayValueDictionary().get(k);
+                                wi1 = knownData.get(pointKey).getDayValueDictionary().get(k);
                                 break;
+                            }
+                            else{
+                                t1 = -1;
+                                wi1 = -1;
                             }
                         }
                         for (int r = j + 1; r <= 365; r++) {
-                            if (unknownData.get(pointKey).getDayValueDictionary().get(r) != -1) {
-                                wi2 = unknownData.get(pointKey).getDayValueDictionary().get(r);
+                            if (knownData.get(pointKey).getDayValueDictionary().get(r) != -1) {
+                                wi2 = knownData.get(pointKey).getDayValueDictionary().get(r);
                                 t2 = r;
                                 break;
+                            }
+                            else{
+                                t2 = -1;
+                                wi2 = -1;
                             }
                         }
 
                         if (wi1 != -1 && wi2 != -1) {
                             wi = ((t2 - j) / (t2 - t1)) * wi1 + ((j - t1) / (t2 - t1)) * wi2;
-                            unknownData.get(pointKey).setDay(j, wi);
+                            knownData.get(pointKey).setDay(j, wi);
                         }
                     }
                 }
-
-                // This changes it to NaN to match the other data
-                for(int i = 0; i <= 365; i++) {
-                    if (unknownData.get(pointKey).getDayValueDictionary().get(0) == -1) {
-                        unknownData.get(pointKey).setDay(i, 2.0 % 0);
-                    }
-                }
             }
-
 
             /*
             This will loop through February - November for each (x, y) coordinate
@@ -77,41 +70,42 @@ public class TimeInterpolation {
             else if(MainController.selected == "Month") {
                 for (int j =1; j <= 10; j++) {
 
-                    if (unknownData.get(pointKey).getDayValueDictionary().get(j) == -1) {
+                    if (knownData.get(pointKey).getDayValueDictionary().get(j) == -1) {
                         for (int k = j - 1; k >= 0; k--) {
-                            if (unknownData.get(pointKey).getDayValueDictionary().get(k) != -1) {
+                            if (knownData.get(pointKey).getDayValueDictionary().get(k) != -1) {
                                 t1 = k;
-                                wi1 = unknownData.get(pointKey).getDayValueDictionary().get(k);
+                                wi1 = knownData.get(pointKey).getDayValueDictionary().get(k);
                                 break;
+                            }
+                            else{
+                                t1 = -1;
+                                wi1 = -1;
                             }
                         }
                         for (int r = j + 1; r <= 11; r++) {
-                            if (unknownData.get(pointKey).getDayValueDictionary().get(r) != -1) {
-                                wi2 = unknownData.get(pointKey).getDayValueDictionary().get(r);
+                            if (knownData.get(pointKey).getDayValueDictionary().get(r) != -1) {
+                                wi2 = knownData.get(pointKey).getDayValueDictionary().get(r);
                                 t2 = r;
                                 break;
+                            }
+                            else{
+                                t2 = -1;
+                                wi2 = -1;
                             }
                         }
 
                         if(wi1 != -1 && wi2 != -1) {
                             wi = ((t2 - j) / (t2 - t1)) * wi1 + ((j - t1) / (t2 - t1)) * wi2;
-                            unknownData.get(pointKey).setDay(j, wi);
+                            knownData.get(pointKey).setDay(j, wi);
                         }
-                    }
-                }
-
-                // This changes it to NaN to match the other data
-                for(int i = 0; i <= 11; i++) {
-                    if (unknownData.get(pointKey).getDayValueDictionary().get(i) == -1) {
-                        unknownData.get(pointKey).setDay(i, 2.0 % 0);
                     }
                 }
             }
 
             // If input is "Year", this will just change any unknown values to NaN to match other data
             else {
-                if(unknownData.get(pointKey).getDayValueDictionary().get(0) == -1) {
-                    unknownData.get(pointKey).setDay(0, 2.0 % 0);
+                if(knownData.get(pointKey).getDayValueDictionary().get(0) == -1) {
+                    knownData.get(pointKey).setDay(0, 2.0 % 0);
                 }
             }
         }

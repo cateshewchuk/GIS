@@ -30,6 +30,52 @@ public class ConvertData {
         }
     }
 
+    public static void NaNToValue(HashMap<String, Location> data) {
+        List<Vector2D> coordinates = coordinatesToVector(data);
+        for(Vector2D vector: coordinates) {
+            String skey = vector.x + ", " + vector.y;
+
+            switch(MainController.selected.toString()) {
+                case "Day":
+                    for (int i = 0; i <= 365; i++)
+                        if (Double.isNaN((double)data.get(skey).getDayValueDictionary().get(i)))
+                            data.get(skey).setDay(i, -1);
+                    break;
+                case "Month":
+                    for (int i = 0; i <= 11; i++)
+                        if (Double.isNaN((double)data.get(skey).getDayValueDictionary().get(i)))
+                            data.get(skey).setDay(i, -1);
+                    break;
+                case "Year":
+                    if (Double.isNaN((double)data.get(skey).getDayValueDictionary().get(0)))
+                        data.get(skey).setDay(0, -1);
+            }
+        }
+    }
+
+    public static void valueToNaN(HashMap<String, Location> data) {
+        List<Vector2D> coordinates = coordinatesToVector(data);
+        for(Vector2D vector: coordinates) {
+            String skey = vector.x + ", " + vector.y;
+
+            switch(MainController.selected.toString()) {
+                case "Day":
+                    for (int i = 0; i <= 365; i++)
+                        if (data.get(skey).getDayValueDictionary().get(i) == -1)
+                            data.get(skey).setDay(i, Double.NaN);
+                    break;
+                case "Month":
+                    for (int i = 0; i <= 11; i++)
+                        if (data.get(skey).getDayValueDictionary().get(i) == -1)
+                            data.get(skey).setDay(i, Double.NaN);
+                    break;
+                case "Year":
+                    if (data.get(skey).getDayValueDictionary().get(0) == -1)
+                        data.get(skey).setDay(0, Double.NaN);
+            }
+        }
+    }
+
     // Converts given (x, y) coordinates into the Vector2D format
     public static List<Vector2D> coordinatesToVector(HashMap<String, Location> data) {
         List<Vector2D> knownCoordinates = new ArrayList<>();

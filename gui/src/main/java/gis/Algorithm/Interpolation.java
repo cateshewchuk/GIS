@@ -8,8 +8,8 @@ import java.util.*;
 
 public class Interpolation {
     public static void runInterpolation (HashMap<String, Location> knownData, HashMap<String, Location> unknownData) throws NotEnoughPointsException {
+        TimeInterpolation.timeInterpolate(knownData);
         SpatioInterpolation.spaceFunction(knownData, unknownData);
-        TimeInterpolation.timeInterpolate(unknownData);
     }
 
     // Helper method for validation interpolation. See CrossValidation.java for details.

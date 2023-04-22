@@ -14,6 +14,7 @@ public class SpatioInterpolation {
         List<Vector2D> knownCoordinates = ConvertData.coordinatesToVector(knownData);
         List<Vector2D> unknownCoordinates = ConvertData.coordinatesToVector(unknownData);
 
+        ConvertData.NaNToValue(knownData);
         ConvertData.nullToValue(knownData);
         ConvertData.nullToValue(unknownData);
 
@@ -25,7 +26,6 @@ public class SpatioInterpolation {
 
             List<Triangle2D> tris = Triangulation.del(knownCoordinates, point);
             Triangle2D tri = closestTriangle(tris, point);
-            //System.out.println(point.x + ", " + point.y + ": " + tri);
 
             if(tri != null) {
                 // To be in the format for the HashMaps being used
@@ -53,13 +53,15 @@ public class SpatioInterpolation {
                             w2 = knownData.get(outerKey2).getDayValueDictionary().get(i);
                             w3 = knownData.get(outerKey3).getDayValueDictionary().get(i);
 
-                            if (w1 != -1 && w2 != -1 && w3 != -1) {
+                            if (w1 != -1  && w2 != -1 && w3 != -1) {
                                 w = N1 * w1 + N2 * w2 + N3 * w3;
                                 unknownData.get(pointKey).setDay(i, w);
                             }
                         }
                     }
                 }
+
+
 
                 /*
                 Loops through each month of the year for every (x, y) coordinate in the output
@@ -104,5 +106,6 @@ public class SpatioInterpolation {
                 }
             }
         }
+        ConvertData.valueToNaN(unknownData);
     }
 }
