@@ -564,4 +564,7 @@ public class MainController implements Initializable {
         return locationsToSolve;
     }
 
+    public static void setSelected(Object selected) {
+        MainController.selected = selected;
+    }
 }

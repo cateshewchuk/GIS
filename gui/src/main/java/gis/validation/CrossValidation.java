@@ -1,6 +1,7 @@
 package gis.validation;
 
 import gis.Algorithm.Interpolation;
+import gis.app.MainController;
 import gis.model.Location;
 
 import java.io.BufferedWriter;
@@ -25,6 +26,9 @@ public class CrossValidation {
     // Driver method for Leave Out One Cross Validation (LOOCV)
     // See papers 3 and 5
     public void loocv() {
+        //Changes selected back to day for processing
+        MainController.setSelected("Day");
+
         //Creates LOOCV file
         createLOOCVFile();
 
@@ -33,8 +37,9 @@ public class CrossValidation {
     }
 
     public void createLOOCVFile() {
+        String home = System.getProperty("user.home");
         // Create file to write to
-        File outputFile = new File("loocv_sf.txt");
+        File outputFile = new File(home + "/Downloads/loocv_sf.txt");
 
         try {
             // Delete file if it exists, then creates a new one.
@@ -46,7 +51,6 @@ public class CrossValidation {
 
             // Loop through every Location in Location HashMap
             for (Location loc : locationsToValidate.values()) {
-                // TODO: Need to fix to handle months and years once implementation is solidified
                 validateDays(loc, writer);
             }
 
@@ -97,8 +101,9 @@ public class CrossValidation {
     }
 
     private void createLOOCVMetricsFile() {
+        String home = System.getProperty("user.home");
         // Create file to write to
-        File outputFile = new File("error_statistics_sf.txt");
+        File outputFile = new File(home + "/Downloads/error_statistics_sf.txt");
 
         try {
             // Delete file if it exists, then creates a new one.
