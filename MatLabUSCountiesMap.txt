@@ -9,3 +9,9 @@ newmap(proj)
 geoplot(clipped,FaceColor=[1 1 1],EdgeColor=[0 0 0])
 
 hold on
+
+tbl = readtable("C:\Users\14044\Documents\CSCI 7090 - GIS Data\Project\CountyCoordinates.xlsx");
+GT = table2geotable(tbl);
+lat = GT.Shape.Latitude;
+lon = GT.Shape.Longitude;
+geoscatter(lat, lon, 5, "black", "filled")
