@@ -1,0 +1,17 @@
+gt = readgeotable("usastatehi.shp");
+shape = gt.Shape;
+clipped = geoclip(shape,[17 56],[-127 -65]);
+
+figure
+proj = projcrs(102008,Authority="ESRI");
+newmap(proj)
+
+geoplot(clipped,FaceColor=[1 1 1],EdgeColor=[0 0 0])
+
+hold on
+
+tbl = readtable("MeasurementLocations.xlsx");
+GT = table2geotable(tbl);
+lat = GT.Shape.Latitude;
+lon = GT.Shape.Longitude;
+geoscatter(lat, lon, 5, "black", "filled")

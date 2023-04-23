@@ -1,0 +1,11 @@
+gt = readgeotable("C:\Users\14044\Downloads\cb_2018_us_county_20m\cb_2018_us_county_20m.shp");
+shape = gt.Shape;
+clipped = geoclip(shape,[17 56],[-127 -65]);
+
+figure
+proj = projcrs(102008,Authority="ESRI");
+newmap(proj)
+
+geoplot(clipped,FaceColor=[1 1 1],EdgeColor=[0 0 0])
+
+hold on
