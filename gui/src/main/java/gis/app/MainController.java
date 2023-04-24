@@ -403,10 +403,13 @@ public class MainController implements Initializable {
               //  System.out.println(newDay);
 
                 // Adds new data point to location object
-                if(selected == "Day" || selected == "Month")
+                if(selected == "Day" || selected == "Month") {
                     locationDataGiven.get(key).setDay(newDay, pm25);
-                else
+                    locationDataGiven.get(key).addSetDay(newDay);
+                } else {
                     locationDataGiven.get(key).setDay(0, pm25);
+                    locationDataGiven.get(key).addSetDay(0);
+                }
 
                 line = br.readLine();
             }
@@ -543,13 +546,13 @@ public class MainController implements Initializable {
         filepathInterpolateData = DialogModel.getInstance().getfilepathInitialData().getText();
         selected = (String) DialogModel.getInstance().gettimeDomain().getValue();
 
-        // This sets the locationDataGiven HashMap
-        readDataGivenLocations(filepathInitialData, selected.toString());
-
-
         // This creates a new CrossValidation object, which will create the cross validation txt file and store cross
         // validation metrics.
         CrossValidation cv = new CrossValidation(locationDataGiven);
+
+        // This sets the locationDataGiven HashMap
+        readDataGivenLocations(filepathInitialData, selected.toString());
+
         cv.loocv();
     }
 

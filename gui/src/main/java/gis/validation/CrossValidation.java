@@ -84,7 +84,7 @@ public class CrossValidation {
         // Iterate through every day that matters
         for (Map.Entry entry: dayDict.entrySet()) {
             // If data does not exist for the day, it can't be validated.
-            if ((double) entry.getValue() == -1 || Double.isNaN((double)entry.getValue())) {
+            if (!(loc.containsSetDay((int) entry.getKey()))) {
                 continue;
             }
 

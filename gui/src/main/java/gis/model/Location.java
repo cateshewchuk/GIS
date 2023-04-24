@@ -2,6 +2,7 @@ package gis.model;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /* This class should represent every location needed in the dataset. This could be
    expanded upon by creating another class that has a HashMap in the form of
@@ -24,23 +25,16 @@ public class Location {
 
     private double y;
     private int ID;
-
-    /* TODO: This only handles a single year currently. A new HashMap should be created in the form of
-        HashMap<Integer, HashMap<Integer, Double>>, to handle each year having a day value dict. Should only be approached
-        after single year is finished.
-
-        TODO: Does not currently handle Leap Years. Would fix in tandem with Year fix.
-        Integer: Represents the day from 1-365
-
-        Double: Represents the PM2.5 level.
-     */
     private HashMap<Integer, Double> dayValueDictionary;
+
+    private HashSet<Integer> originalDays;
 
     public Location(double x, double y, int ID) {
         this.x = x;
         this.y = y;
         this.ID = ID;
         dayValueDictionary = new HashMap<>();
+        originalDays = new HashSet<>();
     }
 
     public void setDay(int day, double value) {
@@ -95,6 +89,14 @@ public class Location {
 
     public String toString() {
         return "-----------\nID: " + getID() + "\nX: " + getX() + "\nY: " + getY() + "\nDay Value Dict: " + getDayValueDictionary() + "\n";
+    }
+
+    public void addSetDay(int day) {
+        originalDays.add(day);
+    }
+
+    public boolean containsSetDay(int day) {
+        return originalDays.contains(day);
     }
 
 }
