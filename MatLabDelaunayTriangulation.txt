@@ -1,0 +1,8 @@
+rng default
+tbl = readtable("MeasurementLocations.xlsx");
+GT = table2geotable(tbl);
+y = GT.Shape.Latitude;
+x = GT.Shape.Longitude;
+dt = delaunayTriangulation(x, y)
+
+triplot(dt)
